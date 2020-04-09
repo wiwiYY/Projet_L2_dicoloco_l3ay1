@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<!-- <title th:utext="${title}"></title> -->
+<title>Register</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<style>
+th, td {
+	padding: 5px;
+}
+
+td span {
+	font-size: 90%;
+	font-style: italic;
+	color: red;
+}
+
+.error {
+	color: red;
+	font-style: italic;
+}
+</style>
+</head>
+<body>
+	<!-- Include _menu.html -->
+	<th:block th:include="/_menu"></th:block>
+	
+	<h1>Register</h1>
+
+	<h3>Enter user name :</h3>
+	<form name='f' th:action="@{/register}" th:object="${register}" method='POST'>
+		<table>
+			<tr>
+				<td>User:</td>
+				<td><input type='text' name='username' value=''></td>
+			</tr>
+			<tr>
+				<td><button type="submit" class="btn btn-primary">S'Inscrire</button>
+			</tr>
+		</table>
+	</form>
+	
+</body>
+</html>

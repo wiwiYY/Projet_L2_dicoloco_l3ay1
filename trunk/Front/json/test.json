@@ -1,0 +1,29 @@
+[
+    {
+        "name": "Test1",
+        "definitions": [
+            "Nom : A brewery."
+        ],
+        "gender": "Pas de genre",
+        "category": "Categorie a cote des definitions",
+        "synonyms": [],
+        "language": "en",
+        "definition": [
+            "Nom : A brewery."
+        ]
+    },
+    {
+        "name": "Test2",
+        "definitions": [
+            "Nom : A brewery."
+        ],
+        "gender": "Pas de genre",
+        "category": "Categorie a cote des definitions",
+        "synonyms": [],
+        "language": "en",
+        "definition": [
+            "Nom : A brewery."
+        ]
+    }
+
+]

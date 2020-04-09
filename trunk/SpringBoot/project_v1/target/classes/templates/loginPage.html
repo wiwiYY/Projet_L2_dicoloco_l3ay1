@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<title>Login</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<script src="/login.js"></script>
+</head>
+<body>
+	<!-- Include _menu.html -->
+	<th:block th:include="/_menu"></th:block>
+
+	<h1>Login</h1>
+
+<!-- 	<!-- /login?error=true -->
+<!-- 	<div th:if="${#request.getParameter('error') == 'true'}" -->
+<!-- 		style="color: red; margin: 10px 0px;"> -->
+<!-- 		Login Failed!!!<br /> Reason : <span -->
+<!-- 			th:if="${#session!= null and #session.getAttribute('SPRING_SECURITY_LAST_EXCEPTION') != null}" -->
+<!-- 			th:utext="${#session.getAttribute('SPRING_SECURITY_LAST_EXCEPTION').message}"> -->
+<!-- 			Static summary </span> -->
+<!-- 	</div> -->
+
+	<h3>Enter user name :</h3>
+	<form name='f' th:action="@{/login}" th:object="${login}" method='POST'>
+		<table>
+			<tr>
+				<td>User:</td>
+				<td><input type='text' name='username' value=''></td>
+			</tr>
+			<tr>
+				<td><button type="submit" class="btn btn-primary">Valider</button>
+				<td><button type="submit" class="btn btn-primary">GetAllUser</button>
+			</tr>
+		</table>
+	</form>
+
+</body>
+
+</html>
