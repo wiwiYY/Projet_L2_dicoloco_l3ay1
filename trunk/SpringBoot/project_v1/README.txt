@@ -27,8 +27,21 @@ Google Chrome ou Microsoft Edge : Pour le navigateur web
 ## Installation
 
 1) La base de donnée MySQL 
+ - Installer puis lancer MySQL Installer
+ - Choisissez l'option Developper default puis cliquer sur execute. Cela va installer des modules nécessaires
+ - Les modules comme MySQL for Excel ou MySQL for Visual Studio installables manuellement ne sont pas nécessaires.
+ - High Availability : choisissez Standalone MySQL Server / Classic MySQL Replication 
+ - Type and Networking : ne modifiez rien 
+ - Authentification Method : choisissez Use Strong Password Encryption for Authentification
+ - Accounts and Roles : Pour le mot de passe, choisissez le mot de passe 'admin'. Pas besoin de créer des mySQL User Accounts
+ - Windows Service : ne modifiez rien
+ - Apply Configuration : execute
+ - Product Configuration : execute
+ - MySQL Router Configuration : ne modifiez rien. Finish
+ - Connect To Server : En bas, tapez pour User Name 'root' et pour Password 'admin' puis cliquez sur Check
  - Lancez MySQL 
  - Configurez une nouvelle connexion (retenez votre identifiant et mot de passe choisis lors de la configuration)
+ - Lancer le script dicoloco.sql
 
 Une fois la configuration terminée, 
  - Créez une database en retenant le nom choisi pour celle-ci 
@@ -37,17 +50,10 @@ Ensuite, aller à (Projet_L3AY1\branches\sql\dicoloco.sql) :
  - Ouvrez le fichier 
  - Copiez le contenu, Collez-le et lancer le script SQL sur la database crée sur MySQL
 
-2) Le Back-end sur Spring Tool Suite 
+2) Le Back-end 
+ - Installer Java JDK
+ - Lancer le fichier .jar
 
-Sur Spring Tool Suite, 
- - Importez le dossier Projet_L3AY1 en faisant un "Import" -> "Existing Maven Project"
-
-Une fois le projet récupérer sur l'IDE,
- - Allez à (Projet_L3AY1\branches\SpringBoot\project_v1\src\main\java\com\dicoloco\constant\Identifiant.java)
- - Modifiez la valeur des attributs "id" (identifiant MySQL), "password" (mot de passe MySQL) et "dbname" (nom de la database MySQL) selon votre cas 
- - Allez à (Projet_L3AY1\branches\SpringBoot\project_v1\src\main\resources\application.properties) 
- - Modifiez la valeur des "spring.datasource.username" (identifiant MySQL), "spring.datasource.password" (mot de passe MySQL)
- - Modifiez la valeur de "spring.datasource.url" avec "jdbc:mysql://localhost:3306/" + Nom de la database MySQL + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC" (sans espace sur une seule ligne)
 
 L'installation du projet est terminée. 
 
