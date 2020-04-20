@@ -1,3 +1,6 @@
+//lien url vers l'API du Springboot
+var urlAPI = "http://localhost:8080";
+
 /**
  * Ajout d'un mot dans la liste des synonymes
  */
@@ -5,28 +8,35 @@ function addingSynonym () {
     var synonymAdd = document.getElementById("synonymAdd").value;
 
     if (synonymAdd != "") {
-        var wordName = document.getElementById("wordName").textContent;
-        var requestURL = "http://localhost:8080/word/update/"+wordName+"/"+synonymAdd+"/add";
-        var request = new XMLHttpRequest();
+        if(synonymAdd.includes("_") || synonymAdd.includes("|")){
+            alert("Un synonyme ne doit pas contenir '_' ou '|'");
+        }
+        else{
+            var wordName = document.getElementById("wordName").textContent;
+            var wordLanguage = localStorage.getItem('Language');
 
-        request.open('GET', requestURL);
-        request.responseType = 'json';
-        request.send();
-        
-        request.onload = function () {
-            var response = request.response;
+            var requestURL = urlAPI + "/word/update/"+wordName+"/"+synonymAdd+"/"+wordLanguage+"/add";
+            var request = new XMLHttpRequest();
+
+            request.open('GET', requestURL);
+            request.responseType = 'json';
+            request.send();
             
-            if (response == 1) {
-                alert("Succès : Mise à jour réussie");
-                document.location.href = "dicoloco_accueil.html";
-            } else if (response == 2) {
-                alert("Erreur : Le mot "+wordName+" n'existe pas dans le dictionnaire");
-            } else if (response == 4) {
-                alert("Erreur : Le synonyme fait déjà partie de la liste de synonyme de "+wordName);
-            } else if (response == 5) {
-                alert("Erreur : Le synonyme n'existe pas");
-            } else {
-                alert("Erreur message de réponse par défaut : Contacter nous afin de régler ce problème");
+            request.onload = function () {
+                var response = request.response;
+                
+                if (response == 1) {
+                    alert("Succès : Mise à jour réussie");
+                    document.location.href = "dicoloco_accueil.html";
+                } else if (response == 2) {
+                    alert("Erreur : Le mot "+synonymAdd+" n'existe pas dans le dictionnaire '"+wordLanguage+"'");
+                } else if (response == 4) {
+                    alert("Erreur : Le synonyme fait déjà partie de la liste de synonyme de "+wordName);
+                } else if (response == 5) {
+                    alert("Erreur : La methode n'existe pas");
+                } else {
+                    alert("Erreur message de réponse par défaut : Contacter nous afin de régler ce problème");
+                }
             }
         }
     } else {
@@ -40,10 +50,11 @@ function addingSynonym () {
  */
 function deletingSynonym () { 
     var synonymDelete = document.getElementById("synonymDelete").value;
+    var wordLanguage = localStorage.getItem('Language');
 
     if (synonymDelete != "") {
         var wordName = document.getElementById("wordName").textContent;
-        var requestURL = "http://localhost:8080/word/update/"+wordName+"/"+synonymDelete+"/delete";
+        var requestURL = urlAPI + "/word/update/"+wordName+"/"+synonymDelete+"/"+wordLanguage+"/delete";
         var request = new XMLHttpRequest();
 
         request.open('GET', requestURL);
@@ -72,10 +83,11 @@ function deletingSynonym () {
  * Depuis la liste de modal
  */
 function deleteSynonym (numSyn) { 
-    var mot = document.getElementById("synonymeNumModal"+numSyn).textContent;
+    var syn = document.getElementById("synonymeNumModal"+numSyn).textContent;
 
     var wordName = document.getElementById("wordName").textContent;
-    var requestURL = "http://localhost:8080/word/update/"+wordName+"/"+mot+"/delete";
+    var wordLanguage = localStorage.getItem('Language');
+    var requestURL = urlAPI + "/word/update/"+wordName+"/"+syn+"/"+wordLanguage+"/delete";
     var request = new XMLHttpRequest();
 
     request.open('GET', requestURL);

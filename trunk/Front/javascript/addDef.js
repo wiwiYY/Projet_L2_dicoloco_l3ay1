@@ -13,10 +13,16 @@ function addDef() {
     var defList = get_defList();
 
     if(task!==""){
-        defList.push(task);
-        localStorage.setItem('def', JSON.stringify(defList));
-        showDef();
+        if(task.includes("_")){
+            alert("Definition : contient '_'");
+        }
+        else{
+            defList.push(task);
+            localStorage.setItem('def', JSON.stringify(defList));
+            showDef();
+        }
     }
+    
     else{
         alert("c'est vide !");
     }

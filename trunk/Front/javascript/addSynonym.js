@@ -13,6 +13,9 @@ function addSyn() {
     var synList = get_synList();
 
     if(task!==""){
+        if(task.includes("_")){
+            alert("Synonyme : contient '_'");
+        }
         synList.push(task);
         localStorage.setItem('syn', JSON.stringify(synList));
         showSyn();

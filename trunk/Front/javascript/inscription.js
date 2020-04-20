@@ -1,4 +1,5 @@
-// TODO revoir les conditions d'inscription if else
+/* Lien url vers l'API du Springboot */
+var urlAPI = "http://localhost:8080";
 
 /* Fonction main pour la connexion utilisateur */
 function registerAction() { 
@@ -9,28 +10,28 @@ function registerAction() { 
         }
     };
 
-	/* Récupère le nom entrer par utilisateur */
+	/* Recupere le nom entrer par utilisateur */
     var username = document.getElementById("registerUser").value;
 
 	if (username != "") {
-		/*Envoi de la requete HTTP*/
-		xhttp.open("GET", "http://localhost:8080/create/" +username, true);
+		startLoading();
+		/* Envoi de la requete HTTP */
+		xhttp.open("GET", urlAPI + "/create/" +username, true);
 		xhttp.responseType = 'json';
 		xhttp.send();
 
 		xhttp.onload = function () {
-	        var user = xhttp.response;
+	        var response = xhttp.response;
 
-	        if (user != null) {
-	        	var inputUserName = user['name'];
-	        	alert("Succès : Création réussie du compte utilisateur '"+inputUserName+"'. Veuillez à présent vous connecter dans la partie Connexion."); 
+	        if (response === 1) {
+	        	alert("Succès : Création réussie du compte utilisateur '"+username+"'. Veuillez à présent vous connecter dans la partie Connexion."); 
 	        	document.location.href = "dicoloco_connexion.html";
 	        } else {
 	        	alert("Erreur : Compte utilisateur déjà existant ! Veuillez entrer un autre nom.");
 	        }
 	    }
+	    endLoading();
 	} else {
 		alert("Inscription : Veuillez entrer un nom d'utilisateur");
 	}
-	
 }

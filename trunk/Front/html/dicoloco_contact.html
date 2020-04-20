@@ -4,57 +4,78 @@
         <!-- Required meta tags -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+        
         <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-            integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
         <!-- Add icon library -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        
+        <!-- CSS file-->
+        <link rel="stylesheet" type="text/css" href="../css/loading_animation.css">
+        <link rel="stylesheet" type="text/css" href="../css/style.css">
+        <link rel="stylesheet" type="text/css" href="../css/animation.css">
 
+        <!-- JavaScript file extern -->
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+        <script src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+        <!-- JavaScript file intern -->
+        <script type="text/javascript" src="../javascript/connexion.js"></script>
+
+        <!-- Title -->
         <title>DicoLoco - Contact</title>
         <link rel="icon" href="../img/logo.png" type="image/png">
-
-        <!-- Optional JavaScript -->
-        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-            crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-            crossorigin="anonymous"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-            crossorigin="anonymous"></script>
-        <script src="../javascript/connexion.js"></script>
     </head>
 
-    <body class="main" style="background: url(../img/cover6.jpg) no-repeat center center fixed; min-height: 100vh; background-position: center; background-size: cover;" onload="generateHtmlLogin()">
+    <body class="main" style="background: url(../img/cover6.jpg) no-repeat center center fixed; min-height: 100vh; background-position: center; background-size: cover;" onload="generateHtmlLoginOtherPage()">
+        
         <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
-                <a href="dicoloco.html">
-                    <img src="../img/logo.png" alt="" style="width: 50px; height: 50px;">
+                <a class="navbar-brand" href="dicoloco_index.html">
+                    <img src="../img/logo.png" alt="" class="img-fluid animated swing" style="width: 50px; height: 50px;">
                 </a>
-                <a class="navbar-brand" href="dicoloco_accueil.html"><h1>DicoLoco</h1></a>
-
+                <a class="navbar-brand animated pulse" href="dicoloco_accueil.html"><h1>DicoLoco</h1></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse bg-dark" id="navbarNav">
-                    <a class="nav-item nav-link active" href="dicoloco_accueil.html">Accueil<span class="sr-only">(current)</span></a>
-                    <a class="nav-item nav-link" href="dicoloco_ameliorer.html">Améliorer DicoLoco</a>
-                    <a class="nav-item nav-link" href="dicoloco_contact.html">Contact</a>
-                    <a class="nav-item nav-link" href="dicoloco_apropos.html">A Propos</a>
-                    <a class="nav-item nav-link" href="dicoloco_connexion.html">Connexion</a>
-                    <a class="nav-item nav-link text-white">Compte : <a class="nav-item nav-link text-white" id="Name">Par Défaut</a></a>
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a class="nav-item nav-link" href="dicoloco_accueil.html">Accueil</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-item nav-link" href="dicoloco_ameliorer.html">Améliorer DicoLoco</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-item nav-link" href="dicoloco_quiz.html">Mini Quiz</a>
+                        </li>
+                        <li class="nav-items active">
+                            <a class="nav-item nav-link" href="dicoloco_contact.html">Contact</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-item nav-link" href="dicoloco_faq.html">FAQ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-item nav-link" href="dicoloco_connexion.html">Connexion&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                        </li>
+                        <li class="nav-item"><img src="../img/userIcon.png"></li>
+                        <li class="nav-item">
+                            <a class="nav-item nav-link text-white" id="Name">
+                            Par Défaut</a>
+                        </li>
+                    </ul>
                     <div id="deconnexion"></div>
                 </div>
             </div>
         </nav>
 
         <section>
-            <div class="container font-weight-light">
+            <div class="container">
                 <div class="card border-0 shadow my-5">
                     <div class="card-body p-5">
                         <h1 class="font-weight-light">Nous contacter</h1><br><hr><br>
@@ -62,7 +83,7 @@
                         <div class="row">
                             
                             <div class="col-sm-10 col-md-11">
-                                <p class="text-justify">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Si vous avez un problème lors de l'utilisation du dictionnaire, des remarques sur les contenus ou des questions. Nous vous recommandons de nous contacter par mail ou de nous adresser une lettre à l'adresse ci-dessous :</p>
+                                <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Si vous avez un problème lors de l'utilisation du dictionnaire, des remarques sur les contenus ou des questions. Nous vous recommandons de nous contacter par mail ou de nous adresser une lettre à l'adresse ci-dessous :</p>
                             </div>
                         </div><br>
 
@@ -71,7 +92,7 @@
                                 <img src="../img/pin_adresse.svg" class="rounded-lg" alt="" style="width: 25px; height: 25px;">
                             </div>
                             <div class="col-sm-10 col-md-11">
-                                <p class="text-justify">45 Rue des Saints-Pères, 75006 Paris</p>
+                                <p class="text-justify">45 Rue des Saints-Pères, 75006 Paris (Université Paris Descartes)</p>
                             </div>
                         </div><br>
                             
@@ -89,7 +110,7 @@
                                 <img src="../img/telephone.svg" class="rounded-lg" alt="" style="width: 25px; height: 25px;">
                             </div>
                             <div class="col-sm-10 col-md-11">
-                                <p class="text-justify">+33 612345678</p>
+                                <p class="text-justify">+33 612345678 (factice)</p>
                             </div>
                         </div><br><hr><br>
 
@@ -102,52 +123,56 @@
             </div>
         </section>
 
-        <footer class="page-footer font-small bg-dark text-white pt-4">
+        <footer class="page-footer bg-dark text-white pt-4">
             <!-- Footer Links -->
-            <div class="container text-center text-md-left">
+            <div class="container text-md-left">
                 <!-- Grid row -->
-                <div class="row">
+                <div class="row text-justify">
                     <!-- Grid column -->
                     <div class="col-md-4 mx-auto">
-                        <h5 class="font-weight-bold text-uppercase mt-3 mb-4">Informations</h5>
+                        <h5 class="font-weight-bold text-uppercase mt-3 mb-4 text-center">Informations</h5>
+                        <hr class="light">
                         <p>DicoLoco est un projet informatique universitaire (2019-2020) dans le contexte de l'UE Projet fait par un groupe de 4 étudiants en L3 MIAGE à l'Université de Paris (anciennement Université Paris-Descartes).</p>
                     </div>
 
-                    <div class="col-md-2 mx-auto">
-                    <h5 class="font-weight-bold text-uppercase mt-3 mb-4">Ressources</h5>
+                    <div class="col-md-2 mx-auto text-center">
+                        <h5 class="font-weight-bold text-uppercase mt-3 mb-4">Ressources</h5>
+                        <hr class="light">
                         <ul class="list-unstyled">
                             <li>
-                                <a href="dicoloco_apropos.html">Fonctionnalités</a>
+                                <a href="dicoloco_index.html#fonctionalites">Fonctionnalités</a>
                             </li>
                             <li>
                                 <a href="../web_manual/web_manual.pdf">Manuel d'utilisation</a>
                             </li>
                             <li>
-                                <a href="dicoloco_apropos.html">Sources</a>
+                                <a href="../web_manual/sources.pdf">Sources</a>
                             </li>
                         </ul>
                     </div>
 
-                    <div class="col-md-2 mx-auto">
-                    <h5 class="font-weight-bold text-uppercase mt-3 mb-4">A Propos</h5>
+                    <div class="col-md-2 mx-auto text-center">
+                        <h5 class="font-weight-bold text-uppercase mt-3 mb-4">A Propos</h5>
+                        <hr class="light">
                         <ul class="list-unstyled">
                             <li>
-                                <a href="dicoloco_apropos.html">Présentation</a>
+                                <a href="dicoloco_index.html#dicolocoInfo">Présentation</a>
                             </li>
                             <li>
-                                <a href="dicoloco_apropos.html">Auteurs</a>
+                                <a href="dicoloco_index.html#dicoTeam">Auteurs</a>
                             </li>
                             <li>
-                                <a href="dicoloco_apropos.html">FAQ</a>
+                                <a href="dicoloco_faq.html">FAQ</a>
                             </li>
                         </ul>
                     </div>
 
-                    <div class="col-md-2 mx-auto">
-                    <h5 class="font-weight-bold text-uppercase mt-3 mb-4">Contact</h5>
+                    <div class="col-md-2 mx-auto text-center">
+                        <h5 class="font-weight-bold text-uppercase mt-3 mb-4">Contact</h5>
+                        <hr class="light">
                         <ul class="list-unstyled">
                             <li>
-                                <a href="dicoloco_apropos.html">DicoTeam</a>
+                                <a href="dicoloco_index.html#dicoTeam">DicoTeam</a>
                             </li>
                             <li>
                                 <a href="dicoloco_contact.html">@mail</a>
@@ -160,32 +185,31 @@
                 </div>
             </div>
 
-
             <!-- Social buttons -->
             <ul class="list-unstyled list-inline text-center">
                 <li class="list-inline-item">
-                    <a class="btn-floating btn-fb mx-1">
-                        <i class="fa fa-facebook-f"> </i>
+                    <a class="btn-floating btn-fb mx-1" href="#">
+                        <i class="fab fa-facebook"> </i>
                     </a>
                 </li>
                 <li class="list-inline-item">
-                    <a class="btn-floating btn-tw mx-1">
-                        <i class="fa fa-twitter"> </i>
+                    <a class="btn-floating btn-tw mx-1" href="#">
+                        <i class="fab fa-twitter"> </i>
                     </a>
                 </li>
                 <li class="list-inline-item">
-                    <a class="btn-floating btn-gplus mx-1">
-                        <i class="fa fa-google-plus"> </i>
+                    <a class="btn-floating btn-li mx-1" href="#">
+                        <i class="fab fa-linkedin"> </i>
                     </a>
                 </li>
                 <li class="list-inline-item">
-                    <a class="btn-floating btn-li mx-1">
-                        <i class="fa fa-linkedin"> </i>
+                    <a class="btn-floating btn-skype mx-1" href="#">
+                        <i class="fab fa-skype"> </i>
                     </a>
                 </li>
                 <li class="list-inline-item">
-                    <a class="btn-floating btn-dribbble mx-1">
-                        <i class="fa fa-skype"> </i>
+                    <a class="btn-floating btn-youtube mx-1" href="#">
+                        <i class="fab fa-youtube"> </i>
                     </a>
                 </li>
             </ul>

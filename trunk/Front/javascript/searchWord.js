@@ -1,6 +1,8 @@
 /* Variable globale pour incrémenter le nb d'élément d'une liste pour aider à créé les balises html*/
 let numSyn = 0;
-
+//lien url vers l'API du Springboot
+var urlAPI = "http://localhost:8080";
+var nbLangue = 1;
 /**
  * Recherche un mot
  */
@@ -8,9 +10,13 @@ function searchWord() {
     startLoading();
 
     var name = document.getElementById("name").value;
+    var language = document.getElementById("languageDico").value;
+    localStorage.setItem('Language', language);
+    //TODO 
+    localStorage.setItem('WordName', name);
 
     if (name != "") {
-        var requestURL = "http://localhost:8080/word/search/" + name;
+        var requestURL = urlAPI + "/word/searchByLanguage/" +name+ "/" +language;
         var request = new XMLHttpRequest();
 
         // Supprimer le html pour le reload plus tard
@@ -31,23 +37,24 @@ function searchWord() {
         request.onload = function () {
             var word = request.response;
             if (word == null) {
-                searchSugg(name);
+                searchSugg(name, language);
             } else {
                 generateHtml(word);
             }
+            
         }
     } else {
         alert("Veuillez entrer un mot pour faire une recherche");
     }
-    endLoading();
 }
 
 /**
  * Génère la liste des suggestions si le mot n'est pas trouvé
- * @param {wordName} name 
+ * @param name 
+ * @param language (mot anglais ou francais)
  */
-function searchSugg(name) {
-    var requestURL = "http://localhost:8080/word/searchSuggestion/" + name;
+function searchSugg(name, language) {
+    var requestURL =  urlAPI + "/word/searchSuggestion/" + name+ "/" +language;
     var request = new XMLHttpRequest();
     request.open('GET', requestURL);
     request.responseType = 'json';
@@ -58,7 +65,6 @@ function searchSugg(name) {
 
         //Condition si la liste des suggestions n'est pas vide
         if (wordList != "") {
-            console.log("")
             generateSuggestionHtml(name);
             var numberOfSuggestion = 0;
 
@@ -77,17 +83,22 @@ function searchSugg(name) {
                 }	
             }
         }else{
-            alert("Aucune suggestion disponible.");
+            alert("Aucune suggestion disponible. Verifiez la langue");
         }
+        endLoading();
     }
 }
 
 /**
- * Recherche un mot depuis la liste des synonymes d'un mot
+ * Recherche un mot depuis la liste des traductions d'un mot
  * @param {la n-ièeme <buttom>} num //
  */
 function searchWord2(numSyn) {
-    var name2 = document.getElementById("synonymeNum" + numSyn).textContent; //ou utiliser innerHTML si y a un pb
+    startLoading();
+    console.log("numSyn : "+numSyn)
+    var word = document.getElementById("synonymeNum" + numSyn).textContent; //ou utiliser innerHTML si y a un pb
+    
+    var languageChoose = localStorage.getItem('Language');
 
     // Remise à zéro de la variable pour une nouvelle recherche
     numSynZero(numSyn);
@@ -95,7 +106,28 @@ function searchWord2(numSyn) {
     // Supprimer le html pour le reload plus tard
     var toHideSection = document.getElementById('toHideSection');
     toHideSection.remove();
-    var requestURL = "http://localhost:8080/word/search/" + name2;
+
+    var requestURL = urlAPI + "/word/searchByLanguage/" + word + "/" +languageChoose;
+    var request = new XMLHttpRequest();
+    request.open('GET', requestURL);
+    request.responseType = 'json';
+    request.send();
+
+    // Section réponse stocké
+    request.onload = function () {
+        var word = request.response;
+        generateHtml(word);
+    }
+}
+
+/*Recherche un mot depuis la liste de traduction*/
+function searchWord2b(language, word) {
+    startLoading();
+    // Supprimer le html pour le reload plus tard
+    var toHideSection = document.getElementById('toHideSection');
+    toHideSection.remove();
+
+    var requestURL = urlAPI + "/word/searchByLanguage/" + word+ "/" +language;
     var request2 = new XMLHttpRequest();
     request2.open('GET', requestURL);
     request2.responseType = 'json';
@@ -107,24 +139,33 @@ function searchWord2(numSyn) {
         generateHtml(word);
     }
 }
-
-/**
-rechrechre un mot depuis la liste de favoris d'un user
-*@param mot à chercher
-   */
 var word = "";
+/**
+ * Recherche un mot depuis la liste de favoris d'un user 
+ * @param mot à chercher
+ */
 function searchWord3(word) {
+    startLoading();
     // Supprimer le html pour le reload plus tard
     var element = document.getElementById("favToSearch"+word).textContent;
+    var elementTab = element.split(' | ');
+
+    console.log(elementTab[0]); 
+    console.log(elementTab.length);
+
     if(document.getElementById('toHideSection') !==null) {
         var toHideSection = document.getElementById('toHideSection');
         toHideSection.remove();
     }
+
     if(document.getElementById('toHideSuggestion') !==null) {
         var toHideSuggestion = document.getElementById('toHideSuggestion');
         toHideSuggestion.remove();
     }
-    var requestURL = "http://localhost:8080/word/search/" + element;
+
+    console.log("TEST : "+elementTab[0]+", "+elementTab[1]+", length : "+elementTab.length);
+
+    var requestURL = urlAPI + "/word/searchByLanguage/"+elementTab[0]+"/"+elementTab[1];
     var request2 = new XMLHttpRequest();
     request2.open('GET', requestURL);
     request2.responseType = 'json';
@@ -133,6 +174,9 @@ function searchWord3(word) {
     // Section réponse stocké
     request2.onload = function () {
         var word = request2.response;
+        console.log(word);
+        console.log(word['language']);
+        localStorage.setItem("Language", word['language']);
         generateHtml(word);
     }
 }
@@ -142,17 +186,22 @@ function searchWord3(word) {
  * @param {la n-ièeme <buttom>} num //
  */
 function searchWord4(number) {
+    startLoading();
     // Supprimer le html pour le reload plus tard
     var suggestionSelected = document.getElementById("suggestion"+number).textContent;
+    var languageChoose = localStorage.getItem('Language');
+
     if(document.getElementById('toHideSection') !==null) {
         var toHideSection = document.getElementById('toHideSection');
         toHideSection.remove();
     }
+
     if(document.getElementById('toHideSuggestion') !==null) {
         var toHideSuggestion = document.getElementById('toHideSuggestion');
         toHideSuggestion.remove();
     }
-    var requestURL = "http://localhost:8080/word/search/" + suggestionSelected;
+
+    var requestURL = urlAPI + "/word/searchByLanguage/" +suggestionSelected+ "/" +languageChoose;
     var request2 = new XMLHttpRequest();
     request2.open('GET', requestURL);
     request2.responseType = 'json';
@@ -164,8 +213,50 @@ function searchWord4(number) {
         generateHtml(word);
     }
 }
+/**
+ * Recherche un mot depuis la traduction
+ * @param {le numero de la liste} word 
+ */
+function searchWord5(word) {
+    startLoading();
+    // Supprimer le html pour le reload plus tard
+    var element = document.getElementById("tradToSearch"+word).textContent;
+    var elementTab = element.split(' | ');
 
-/* Remet à zéro la valeur de la variable globale , nécessaire pour générer les liste à puces*/
+    console.log(elementTab[0]); 
+    console.log(elementTab.length);
+
+    if(document.getElementById('toHideSection') !==null) {
+        var toHideSection = document.getElementById('toHideSection');
+        toHideSection.remove();
+    }
+
+    if(document.getElementById('toHideSuggestion') !==null) {
+        var toHideSuggestion = document.getElementById('toHideSuggestion');
+        toHideSuggestion.remove();
+    }
+
+    console.log("TEST : "+elementTab[0]+", "+elementTab[1]+", length : "+elementTab.length);
+
+    var requestURL = urlAPI + "/word/searchByLanguage/"+elementTab[0]+"/"+elementTab[1];
+    var request2 = new XMLHttpRequest();
+    request2.open('GET', requestURL);
+    request2.responseType = 'json';
+    request2.send();
+
+    // Section réponse stocké
+    request2.onload = function () {
+        var word = request2.response;
+        console.log(word);
+        console.log(word['language']);
+        localStorage.setItem("Language", word['language']);
+        generateHtml(word);
+    }
+}
+
+/**
+ * Remet à zéro la valeur de la variable globale , nécessaire pour générer les liste à puces
+ */
 function numSynZero() {
     let numSyn = 0;
 }
@@ -180,6 +271,17 @@ function createSynonymList() {
     ul.appendChild(li);
     li.innerHTML = ` <button class="btn btn-outline-secondary btn-sm" id="synonymeNum` + numSyn + `" class="className2" onClick="searchWord2(` + numSyn + `)" ></button>`;
     numSyn += 1;
+}
+
+/**
+ * Générer les listes à puces de traduction
+ */
+function createTraductionList(numTrad, word) {
+    var ul = document.getElementById('wordTraduction');
+    var li = document.createElement('li');
+    ul.appendChild(li);
+    li.innerHTML = ` <button class="btn btn-outline-secondary btn-sm" id="tradToSearch` + numTrad + `" class="className3" onClick="searchWord5(` + numTrad + `)" >`+word['name']+` | `+word['language']+`</button>`;
+
 }
 
 /**
@@ -198,6 +300,7 @@ function createSynonymListModal(mot) {
  * @param {word} jsonObj 
  */
 function generateHtml(jsonObj ) {
+    console.log("new meta");
     // Condition si le html de definition est généré
     if (document.querySelector('section') == null) {
         // Condition si exist affichage à cacher
@@ -221,7 +324,7 @@ function generateHtml(jsonObj ) {
     }
     
     // Split des definitions de word pour les séparers dans une liste ou tableau
-    var defs = jsonObj['definition'];
+    var defs = jsonObj['definitions'];
     const defs1 = JSON.stringify(defs);
     var resDefs = defs1.split('_');
     for(var j = 0; j<resDefs.length-1; j++){
@@ -259,7 +362,6 @@ function generateHtml(jsonObj ) {
     
         //faire une boucle tant que exist un element
         for (var i = 0; i < res.length; i++) {
-            createSynonymList();
             //supprimer les symbole inutle à l'affichage car cela créé un bug
             if (res.length == 1) { //si y'a 1
                 var mot = res[i].substring(2, res[i].length - 2);
@@ -274,6 +376,7 @@ function generateHtml(jsonObj ) {
                 var mot = res[i].substring(1, res[i].length - 1);
             }
             // ajout de l'élément
+            createSynonymList();
             document.getElementById('synonymeNum' + i).textContent = mot; //inneHTML ou textContent
             
         }
@@ -301,15 +404,22 @@ function generateHtml(jsonObj ) {
             createSynonymListModal(mot);
 
             /* document.getElementById('synonymeNumModal' + i).textContent = mot; //inneHTML ou textContent */
-            
         }
     }
-    numSyn = 0;
-    //attributs provisoire 
-    /* document.querySelector("#wordExpression").innerHTML = jsonObj['expressions'];
-    document.querySelector("#wordAntonyms").innerHTML = jsonObj['antonyms']; */
-}
 
+    console.log("la langue "+jsonObj['language']);
+    //genere la liste des traduction 
+    if (jsonObj['language']==="fr"){
+        
+        generateTraduction("en", nbLangue);
+    }
+    else{
+        generateTraduction("fr", nbLangue);
+    }
+
+    numSyn = 0;
+    endLoading();
+}
 
 /**
  * Génère le code html bootrstrap pour la page de définition
@@ -328,14 +438,9 @@ function defNameGenerator() {
                     <h1 class="font-weight-light">Définition</h1><br>
 
                     <div id="toGenerateButton" class="row">
-                        <div class="col-sm-3 col-md-3">
-                            
+                        <div class="col-sm-4 col-md-4">
                             <h2 id="wordName"></h2>
                             <p id="wordName2"></p>
-                            
-                            <!-- <button id="favorisAdd" onclick="addingFavoris()" type="button" class="btn btn-outline-warning">addFavoris</button>
-                            <button type="button" onclick="deleteFavoris()" class="btn btn-warning">removeFavoris</button>
-                            -->
                         </div>
                     </div><br>
 
@@ -392,6 +497,18 @@ function defNameGenerator() {
                             <ul>
                         </div>
                     </div>
+
+                    <div class="row">
+                        <div class="col-sm-4 col-md-4">
+                            <h3 class="font-weight-light">Autre(s) langue(s)</h3>
+                        </div>
+                        <div class="col-sm-8 col-md-8">
+                            <ul id="wordTraduction">
+                                
+                            </ul>
+                        </div>
+                    </div><br>
+
                 </div>
             </div>
         </div>
@@ -407,20 +524,19 @@ function defNameGenerator() {
         if (this.readyState == 4 && this.status == 200) {
         }
     };
-
     var username = localStorage.getItem('UserName');
     if (username != null) {
         
         //Envoi de la requete HTTP
-        xhttp.open("GET", "http://localhost:8080/login/" +username, true);
+        xhttp.open("GET", urlAPI + "/login/" +username, true);
         xhttp.responseType = 'json';
         xhttp.send();
-        var user;
+     
         var generateButtonFavorite = document.getElementById('toGenerateButton');
         var exist = false;
         xhttp.onload = function () {
-            user = xhttp.response;
-            var wordToCompare = document.getElementById("wordName").textContent;
+            var user = xhttp.response;
+            var wordToCompare = document.getElementById("wordName").textContent+" | "+localStorage.getItem('Language');
 
             
             for(var i =0; i<taille(user.favorites); i++) {
@@ -432,7 +548,7 @@ function defNameGenerator() {
                 }
             }
             if(exist){
-/*                 generateButtonFavorite.innerHTML += `<button type="button" onclick="deleteFavoris()" class="btn btn-warning">enlever des favoris</button>`; */
+                /* generateButtonFavorite.innerHTML += `<button type="button" onclick="deleteFavoris()" class="btn btn-warning">enlever des favoris</button>`; */
                 generateButtonFavorite.innerHTML += `<a id="deleteFavoris" onclick="deleteFavoris()">
                 <!--généré par searchWord.js -->
                 <img src="../img/fav_icon_3.png" width="40px" height="40px" alt="" onmouseover="this.src='../img/fav_icon_1.png';" onmouseout="this.src='../img/fav_icon_3.png';" 
@@ -452,6 +568,10 @@ function defNameGenerator() {
     redirectAncre();
 }
 
+/**
+ * Genere l'affichage des suggestions
+ * @param {*} name 
+ */
 function generateSuggestionHtml(name){
     var div = document.getElementById('toGenerateSuggestion');
     var diva = document.createElement('div');
@@ -476,12 +596,41 @@ function generateSuggestionHtml(name){
     redirectAncre();  
 }
 
+function generateTraduction(language, nbMot){
+    var wordName = document.getElementById('wordName').textContent;
+    var requestURL = urlAPI + "/word/translation/" + wordName +"/"+ language;
+    var request = new XMLHttpRequest();
+    request.open('GET', requestURL);
+    request.responseType = 'json';
+    request.send();
+
+    // Section réponse stocké
+    request.onload = function () {
+        
+        var word = request.response;
+        console.log('mot : ->> '+word['name']);
+        if(word['name'] == undefined){
+            console.log("le mot est undefined")
+        }else{
+            console.log("le mot existe")
+            for (var i=0; i<nbMot; i++){  
+                console.log("le chiffe dla boucle : "+i)
+                createTraductionList(i , word);
+                // document.getElementById("#traductionNum"+i).innerHTML = ` `+word['name'] +` | `+word['language'];
+            }
+        }
+    }
+}
 function redirectAncre() {
     //document.location.href='#ancre';
-    window.scroll(0,10000);
+    window.scroll(0,700);
 }
 
+/**
+ * Affiche/Enleve le loading 
+ */
 function startLoading(){
+    endLoading();
     console.log('loading start');
     var div = document.getElementById('loading_body');
     var diva = document.createElement('div');
@@ -490,12 +639,14 @@ function startLoading(){
     diva.innerHTML = 
     `<div class="bar">
         <div class="circle"></div>
-        <p class="loading">Loading</p>
+        <p class="loading">Patientez</p>
     </div>`;
 }
 
-function endLoading(){
-    var div = document.getElementById('toEndLater');
-    div.parentNode.removeChild(div);
-    console.log('loading end');
+function endLoading(){    
+    if(document.getElementById('toEndLater') !== null) {
+        var toHideSection = document.getElementById('toEndLater');
+        toHideSection.remove();
+        console.log('loading end');
+    }
 }

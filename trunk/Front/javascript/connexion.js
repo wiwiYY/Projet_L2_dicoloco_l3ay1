@@ -1,3 +1,6 @@
+/* Lien url vers l'API du Springboot */
+var urlAPI = "http://localhost:8080";
+
 /* Fonction pour la connexion utilisateur */
 function loginAction() { 
 	var xhttp = new XMLHttpRequest();
@@ -6,38 +9,55 @@ function loginAction() { 
         }
     };
 
-	/* Récupère le nom entrer par utilisateur */
+	/* Recupere le nom entrer par utilisateur */
     var username = document.getElementById("username").value;
 
     if (username != "") {
+        startLoading();
         /* Envoi de la requete HTTP */
-        xhttp.open("GET", "http://localhost:8080/login/" +username, true);
+        xhttp.open("GET", urlAPI + "/login/" +username, true);
         xhttp.responseType = 'json';
         xhttp.send();
 
-        /* Récupère la réponse, un objet User sous format JSON et génère les modifications */
+        /* Recupere la reponse, un objet User sous format JSON et genere les modifications */
         xhttp.onload = function () {
             var user = xhttp.response;
 
             if (user != null) {
                 alert("Succès : Utilisateur valide. Vous allez etre rediriger vers la page d'Accueil.")
                 var size = taille(user);
-                setUser(user);
-                redirectAccueilPage();
-                generateHtmlLogin();
+                var beforeUser = localStorage.getItem('UserName');
+
+                /* Vérifie si l'user se connecte à son 2ème compte sans s'etre deconnecte 
+                 * Exemple : User se connecte à son compte 1, puis se connecte à son compte 2 sans avoir cliquer sur le bouton de Déconnexion avant 
+                 */
+                if (beforeUser != "") {
+                    setUser(user);
+                    redirectAccueilPage();
+                    generateHtmlLoginNoLogout();
+                }
+                else {
+                    setUser(user);
+                    redirectAccueilPage();
+                    generateHtmlLogin();
+                }
+                
             } else {
                 alert("Erreur : le nom de cet utilisateur n'existe pas ! Veuillez entrer un nom valide.")
             }
         }
+        endLoading();
     } else {
         alert("Connexion : Veuillez entrer un nom d'utilisateur");
     }
 	
 }
 
-/* Génère le HTML selon l'utilisateur */
+/* Genere le HTML selon l'utilisateur connecte de la page dicoloco_accueil.html
+ * Exemple : User se connecte à son compte 1, puis se connecte à son compte 2 sans avoir cliquer sur le bouton de Déconnexion avant 
+ */
 function generateHtmlLogin() {
-    /* Récupère les données de l'utilisateur qui se trouve dans le LocalStorage */
+    /* Recupere les donnees de l'utilisateur qui se trouve dans le LocalStorage */
     var UserName = localStorage.getItem('UserName');
     var UserFavorites = localStorage.getItem('UserFavorites');
 
@@ -46,6 +66,33 @@ function generateHtmlLogin() {
         deconnexionGenerator();
         favoritesListInterfaceGenerator();
         favoritesGenerator();
+    } 
+}
+
+/* Genere le HTML selon l'utilisateur connecte de la page dicoloco_accueil.html */
+function generateHtmlLoginNoLogout() {
+    /* Recupere les donnees de l'utilisateur qui se trouve dans le LocalStorage */
+    var UserName = localStorage.getItem('UserName');
+    var UserFavorites = localStorage.getItem('UserFavorites');
+
+    if (UserName != null) {
+        document.querySelector("#Name").innerHTML = UserName;
+        favoritesListInterfaceGenerator();
+        favoritesGenerator();
+    } 
+}
+
+/* Genere les infos de l'utilisateur et le boutons de deconnexion
+ * pour la navbar sur toutes les autres pages sauf dicoloco_accueil.html qui a sa propore fonction 
+ */
+function generateHtmlLoginOtherPage() {
+    /* Recupere les donnees de l'utilisateur qui se trouve dans le LocalStorage */
+    var UserName = localStorage.getItem('UserName');
+    var UserFavorites = localStorage.getItem('UserFavorites');
+
+    if (UserName != null) {
+        document.querySelector("#Name").innerHTML = UserName;
+        deconnexionGenerator();
     } 
 }
 
@@ -58,41 +105,42 @@ function setUser(userObject) {
 	localStorage.setItem('UserFavorites', inputUserFavorites);
 }
 
-/* Génère le code html pour le bouton de Deconnexion */
+/* Genere le code html pour le bouton de Deconnexion sur la navbar */
 function deconnexionGenerator(){
     const div = document.createElement('div');
     div.id = 'deconnexionGenerator';
 
-    div.innerHTML = `<button type="button" class="btn btn-outline-danger" onclick="logout()">Déconnexion</button>`;
+    div.innerHTML = `<button type="button" class="btn btn-danger" onclick="logout()">Déconnexion</button>`;
     document.getElementById('deconnexion').appendChild(div);
 }
 
-/* Génère le code html pour la liste de favoris de l'utilisateur */
+/* Genere le code html pour la liste de favoris de l'utilisateur */
 function favoritesGenerator(){
-    var ul = document.createElement('ul');
-	//var UserFavorites = localStorage.getItem('UserFavorites');
+	
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
         }
     };
-	var numberOfFavorite = 0;
+
 	/* Récupère le nom entrer par utilisateur */
     var username = localStorage.getItem('UserName');
     if (username != null) {
     	/*Envoi de la requete HTTP*/
-    	xhttp.open("GET", "http://localhost:8080/login/" +username, true);
+    	xhttp.open("GET", urlAPI + "/login/" +username, true);
     	xhttp.responseType = 'json';
     	xhttp.send();
-    	var user;
-    	
-        //boucle pour générer la liste des favoris
+    	var user;	
+        
     	xhttp.onload = function () {
     		user = xhttp.response;
 
     		var ula = document.getElementById('favoritesUl');
 
             if (ula != null) {
+                /* Numerote le nombre de favoris */ 
+                var numberOfFavorite = 0;
+                /* Boucle pour generer la liste des favoris */
         		for(var i =0; i<taille(user.favorites); i++) {
         			
         			var lia = document.createElement('li');
@@ -105,35 +153,13 @@ function favoritesGenerator(){
     }
 }
 
-/* Génère le code html pour la liste de favoris de l'utilisateur */
+/* Genere le code html pour la liste de favoris de l'utilisateur */
 function favoritesListInterfaceGenerator(){
     var toHideSection = document.getElementById('ToHideLogin');
     toHideSection.remove();
-    /* a laisser pour plus tard si on change d'avis - by William 
-    Afin d'enlever le container favorites si l'user n'est pas connecte
-
-    var divId = document.getElementById('FavoritesListInterface');
-    var div = document.createElement('div');
-    divId.appendChild(div);
-    div.innerHTML = ` 
-
-    <div class="card border-0 shadow my-5">
-        <div class="card-body p-5">
-            <div class="rounded-lg">
-                <div><br>
-                    <h1 class="font-weight-light">Votre liste de Favoris</h1>
-                    <p style="font-style: oblique 40deg;">Connectez-vous pour avoir une liste</p><br>
-                    <div id="Favorites">
-                        <ul id="favoritesUl">
-                        <ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>`;*/
 }
 
-/* Fonction de Deconnexion, efface les données persistent de l'utilisateur & le bouton Deconnexion et redirige vers l'Accueil */
+/* Fonction de Deconnexion, efface les donnees persistent de l'utilisateur & le bouton Deconnexion et redirige vers l'Accueil */
 function logout() {
 	localStorage.removeItem('UserName');
 	var toHide = document.getElementById('deconnexionGenerator');
@@ -142,6 +168,7 @@ function logout() {
    	redirectAccueilPage();
 }
 
+/* Redirige vers la page Accueil */
 function redirectAccueilPage() {
     document.location.href = "dicoloco_accueil.html";
 }
@@ -152,4 +179,42 @@ function taille(obj) {
 		size++;
 	}
 	return size;
+}
+
+/* Fonction pour supprimer un user de la bdd */
+function deleteUser() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            // alert(this.responseText);
+        }
+    };
+
+    var UserDelete = document.getElementById("UserDelete").value;
+
+    if (UserDelete != "") {
+        startLoading();
+        xhttp.open("GET", urlAPI + "/delete/" + UserDelete, true);
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.send();
+
+        /* Recupere la reponse, un objet User sous format JSON et genere les messages de reponses */
+        xhttp.onload = function () {
+            var response = xhttp.response;
+
+            if (response == 0) {
+                alert("Succès : L'utilisateur '" + UserDelete + "' a bien été supprimé de la bdd.");
+                logout();
+            } else if (response == 1) {
+                alert("Erreur : L'utilisateur '" + UserDelete + "' n'a pas été supprimé de la bdd !");
+            } else if (response == 2) {
+                alert("Erreur : L'utilisateur '" + UserDelete + "' n'existe pas dans la bdd !");
+            } else {
+                alert("Erreur : La fonctionnalité Supprimer rencontre actuellement un problème technique, Veuillez nous contacter !");
+            }
+        }
+        endLoading();
+    } else {
+        alert("Suppression du compte utilisateur : Veuillez entrer votre pseudo")
+    }
 }
