@@ -8,13 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dicoloco.constant.Identifiant;
 import com.dicoloco.model.User;
 
-@Repository
+@Repository("daoUser")
 @Transactional
 public class UserDAO {
 
 	/**
-	 * Retourne la liste des utilisateurs
-	 * @return Liste d'utilisateur
+	 * Retourne une liste contenant les utilisateurs 
+	 * @return List<User> liste d'utilisateurs
 	 */
 	public List<User> getAllUsers(){
 
@@ -37,14 +37,13 @@ public class UserDAO {
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-
 		return listUsers;
 	}
 
 	/**
-	 * Cherche l'utilisateur correspondant
+	 * Cherche l'utilisateur correspondant au nom
 	 * @param userName Nom de l'utilisateur 
-	 * @return L'utilisateur
+	 * @return User Un utilisateur ou bien null
 	 */
 	public User findUserAccount(String userName) {
 
@@ -75,7 +74,6 @@ public class UserDAO {
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-
 		return user;
 	}
 
@@ -100,7 +98,7 @@ public class UserDAO {
 	}
 
 	/**
-	 * Update la liste de favoris d'un utilisateur dans la bdd	 
+	 * Met a jour la liste de favoris d'un utilisateur 
 	 * @param userName Nom de l'utilisateur
 	 * @param favoritesList Liste de Favoris de l'utilisateur 
 	 */
@@ -121,4 +119,82 @@ public class UserDAO {
 			e.printStackTrace();
 		}
 	}	
+	
+	/**
+	 * Supprime un user de la bdd
+	 * Retourne 0 si le user a bien ete supprime 
+	 * Retourne 1 si le user n'a pas ete supprime 
+	 * @param user  
+	 * @return int Reponse de retour de la methode
+	 */
+	public int deleteUser(String user) {
+				
+		try {
+			Identifiant mySqlId = new Identifiant();
+			StringBuffer sql = new StringBuffer();
+			
+			sql.append("delete from user where name = '");
+			sql.append(user);
+			sql.append("'");
+			
+			(mySqlId.getStatement()).executeUpdate(sql.toString());
+
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		if (findUserAccount(user) == null) {
+			return 0;
+		} else {
+			return 1;
+		}
+	}
+
+	public void removeAllUsers() {
+		try {
+			Identifiant mySqlId = new Identifiant();
+			StringBuffer sql = new StringBuffer();
+			
+			sql.append("delete from user");
+			
+			(mySqlId.getStatement()).executeUpdate(sql.toString());
+
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	
+	}
+
+	public void addUsers(List<User> users) {
+		try {  
+			Identifiant mySqlId = new Identifiant();
+			StringBuffer sql = new StringBuffer();
+
+			sql.append("insert into user values ");
+			for(int i=0;i<users.size();i++) {
+				StringBuffer favorites = new StringBuffer();
+				for(int j=0;j<users.get(i).getFavorites().size();j++) {
+					favorites.append(users.get(i).getFavorites().get(j));
+					favorites.append("_");
+				}
+				
+				sql.append("('");
+				sql.append(users.get(i).getName());
+				sql.append("', '");
+				sql.append(favorites.toString());
+				sql.append("')");
+				if(i<users.size()-1) {
+					sql.append(",");
+				}
+				else {
+					sql.append(";");
+				}
+			}
+
+			(mySqlId.getStatement()).executeUpdate(sql.toString());
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 }

@@ -57,11 +57,51 @@ public class WordDao {
 	}
 	
 	/**
+	 * Recupere tous les mots de la bdd selon la langue
+	 * @param language
+	 * @return la liste des mots de la bdd
+	 */
+	public List<Word> findAllWordsWithLanguage(String language){
+		List <Word>listWords = new ArrayList<>();
+
+		try {
+			
+			Identifiant mySqlId = Identifiant.getInstance();
+			ResultSet myRs = (mySqlId.getStatement()).executeQuery("select * from word where language = '"+language+"'");
+			
+			while(myRs.next()) {
+				
+				List<String> synonyms = new ArrayList<>();
+				StringTokenizer synonymsTokens = new StringTokenizer(myRs.getString("synonyms"),"_");
+				
+				while(synonymsTokens.hasMoreTokens()) {
+					synonyms.add(synonymsTokens.nextToken());
+				}
+				
+				List<String> definitions = new ArrayList<>();
+				StringTokenizer definitionsTokens = new StringTokenizer(myRs.getString("definitions"),"_");
+				
+				while(definitionsTokens.hasMoreTokens()) {
+					definitions.add(definitionsTokens.nextToken());
+				}
+				
+				listWords.add(new Word(myRs.getString("name"), definitions, myRs.getString("gender"), 
+						myRs.getString("category"),synonyms, myRs.getString("language")));
+			}
+
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return listWords;
+	}
+	
+	/**
 	 * Cherche le mot correspondant
 	 * @param wordName
+	 * @param language
 	 * @return le mot recherche ou null si pas trouve
 	 */
-	public Word findWord(String wordName) {
+	public Word findWord(String wordName, String language) {
 		Word word = null;
 		try {
 			
@@ -70,7 +110,9 @@ public class WordDao {
 			
 			sql.append("select * from word where name='");
 			sql.append(wordName);
-			sql.append("'");
+			sql.append("' and language='");
+			sql.append(language);
+			sql.append("';");
 			
 			ResultSet myRs = (mySqlId.getStatement()).executeQuery(sql.toString());
 			
@@ -105,7 +147,7 @@ public class WordDao {
 	 * @param wordSynonyms
 	 * @param method 
 	 */
-	public void updateWord(String wordName, String wordSynonyms) {
+	public void updateWord(String wordName, String wordSynonyms, String language) {
 				
 		try {
 			
@@ -116,6 +158,8 @@ public class WordDao {
 			sql.append(wordSynonyms.toString());
 			sql.append("' where name = '");
 			sql.append(wordName);
+			sql.append("' and language='");
+			sql.append(language);
 			sql.append("'");
 			
 			(mySqlId.getStatement()).executeUpdate(sql.toString());
@@ -129,18 +173,20 @@ public class WordDao {
 	 * Supprime un mot de la bdd
 	 * Retourne 0 si le mot a bien été supprimé 
 	 * Retourne 1 si le mot n'a âs été supprimé 
-	 * @param wordName
+	 * @param wordName le nom 
+	 * @param language
 	 * @return  int Réponse de retour de la méthode
 	 */
-	public int deleteWord(String wordName) {
+	public int deleteWord(String wordName, String language) {
 				
 		try {
-			
 			Identifiant mySqlId = new Identifiant();
 			StringBuffer sql = new StringBuffer();
 			
 			sql.append("delete from word where name = '");
 			sql.append(wordName);
+			sql.append("' and language='");
+			sql.append(language);
 			sql.append("'");
 			
 			(mySqlId.getStatement()).executeUpdate(sql.toString());
@@ -149,7 +195,7 @@ public class WordDao {
 			e.printStackTrace();
 		}
 		
-		if (findWord(wordName) == null) {
+		if (findWord(wordName, language) == null) {
 			return 0;
 			
 		} else {
@@ -199,55 +245,81 @@ public class WordDao {
 	 * Chaque definition est separee par un _
 	 * Pareil pour les synonymes
 	 * @param words : liste de mots filtre depuis le fichier json
+	 * @return 0 si tout va bien, 1 si echec de l'ajout
 	 */
-	public void createWordBDDFound(List<Word> words) {
+	public int createWordBDDFound(List<Word> words) {
 		try {
-			if(words.size()>0) {
-				
-				Identifiant mySqlId = new Identifiant();
-				StringBuffer sql = new StringBuffer();
-				sql.append("insert into word values ");
-								
-				for(int i=0; i<words.size(); i++ ) {
+			boolean continu = true;
+			int count = 0;
+
+			while(continu) {
+				if(count<words.size()) {
+					int array = words.size() - count;
+					if(array<15000) {
+						continu = false;
+					}
+					else {
+						array=15000;
+					}
 					
-					if(!words.get(i).getName().contains("/")) {
-						StringBuffer definitions = new StringBuffer();
-						
-						for(int j=0; j<words.get(i).getDefinition().size(); j++) {
-							definitions.append(words.get(i).getDefinition().get(j));
-							definitions.append("_");
-						}
-						
-						sql.append("('");
-						sql.append(words.get(i).getName());
-						sql.append("','");
-						sql.append(definitions.toString());
-						sql.append("','");
-						sql.append("Pas de genre");
-						sql.append("','");
-						sql.append("Categorie a cote des definitions");
-						sql.append("','");
-						
-						for(int k=0; k<words.get(i).getSynonyms().size();k++) {
-							sql.append(words.get(i).getSynonyms().get(k));
-							sql.append("_");
-						}
-						
-						sql.append("','");
-						sql.append(words.get(i).getLanguage());
-						sql.append("')");
-						
-						if(i==words.size()-1) {
-						}
-						else {
-							sql.append(",");
-						}
-					}	
+					Identifiant mySqlId = new Identifiant();
+					StringBuffer sql = new StringBuffer();
+					sql.append("insert into word values ");
+					
+					for(int i = count; i<count+array;i++) {
+
+						if(!words.get(i).getName().contains("/")) {
+							StringBuffer definitions = new StringBuffer();
+
+							for(int j=0; j<words.get(i).getDefinitions().size(); j++) {
+								definitions.append(words.get(i).getDefinitions().get(j));
+								definitions.append("_");
+							}
+
+							sql.append("('");
+							sql.append(words.get(i).getName());
+							sql.append("','");
+							sql.append(definitions.toString());
+							sql.append("','");
+							sql.append("Genre a cote des definitions");
+							sql.append("','");
+							sql.append("Categorie a cote des definitions");
+							sql.append("','");
+
+							for(int k=0; k<words.get(i).getSynonyms().size();k++) {
+								sql.append(words.get(i).getSynonyms().get(k));
+								sql.append("_");
+							}
+
+							sql.append("','");
+							sql.append(words.get(i).getLanguage());
+							sql.append("')");
+
+							if(i==count+array-1) {
+								sql.append(";");
+							}
+							else {
+								sql.append(",");
+							}
+						}	
+					}
+					
+					count += array;
+					System.out.println(sql.toString());
+					(mySqlId.getStatement()).executeUpdate(sql.toString());	
+
 				}
-				(mySqlId.getStatement()).executeUpdate(sql.toString());	
+				else {
+					continu = false;
+				}
 			}
+			
 		}catch(Exception e) {
 			e.printStackTrace();
+			return 1;
 		}		
+		
+		return 0;
 	}
+	
 }

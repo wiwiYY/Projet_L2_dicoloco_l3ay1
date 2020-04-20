@@ -30,7 +30,7 @@ class DicolocoApplicationTestsUser {
 		UserService userService = new UserService();
 		String userName = "toto";
 		String method = "add";
-		assertEquals(1, userService.updateFavorites("Accessory", userName, method));
+		assertEquals(1, userService.updateFavorites("Accessory","en", userName, method));
 	}
 	
 	@Test
@@ -38,7 +38,7 @@ class DicolocoApplicationTestsUser {
 		UserService userService = new UserService();
 		String falseUser = "barry";
 		String method = "add";
-		assertEquals(2, userService.updateFavorites("a", falseUser, method));
+		assertEquals(2, userService.updateFavorites("Cosmologie","fr", falseUser, method));
 
 	}
 	
@@ -49,7 +49,7 @@ class DicolocoApplicationTestsUser {
 		String wordFavoris = "Abdominals";
 		String userName = "toto";
 		String method = "delete";
-		assertEquals(1, userService.updateFavorites(wordFavoris, userName, method));
+		assertEquals(1, userService.updateFavorites(wordFavoris,"en", userName, method));
 	}
 	
 	@Test
@@ -58,7 +58,7 @@ class DicolocoApplicationTestsUser {
 		String wordFavoris = "Aeronaut";
 		String userName = "toto";
 		String method = "delete";
-		assertEquals(3, userService.updateFavorites(wordFavoris, userName, method));
+		assertEquals(3, userService.updateFavorites(wordFavoris,"en", userName, method));
 	}
 	
 	@Test
@@ -66,7 +66,7 @@ class DicolocoApplicationTestsUser {
 		UserService userService = new UserService();
 		String userName = "toto";
 		String method = "add";
-		assertEquals(4, userService.updateFavorites("Accessory", userName, method));
+		assertEquals(4, userService.updateFavorites("Accessory","en", userName, method));
 
 	}
 }

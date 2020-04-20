@@ -1,6 +1,7 @@
 package com.dicoloco.controller;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,55 +15,71 @@ import com.dicoloco.service.UserService;
 @RestController
 @RequestMapping(path="/")
 public class UserController {
+	
+	private UserService userService;
+	
+	@Autowired
+	public UserController(UserService userService) {
+		this.userService = userService; 
+	}
     
     /**
      * Recupere les informations d'un utilisateur
      * @param name
-     * @param model
-     * @return La page avec les informations de l'utilisateur
+     * @return User L'utilisateur 
      */
     @GetMapping(value ="/login/{name}")
-	public User getUserPage(@PathVariable(name="name") String name) {
-    	UserService service = new UserService();
-        User user = service.findUserAccount(name);
+	public User getUserInfo(@PathVariable(name="name") String name) {
+    	User user = userService.findUserAccount(name);
         return user;
     }
     
     /**
-     * Recupere la liste d'utilisateur
-     * @return la liste d'utilisateurs
+     * Recupere la liste des utilisateurs
+     * @return la liste des utilisateurs
      */
     @RequestMapping(value = "/getUsers", method = RequestMethod.GET)
     public List<User> getUsers(){
-    	UserService w = new UserService();
-		return w.findAllUsers();
+		return userService.findAllUsers();
     }
     
     /**
      * Ajout d'un nouvel utilisateur 
      * @param name
+     * @return User l'utilisateur creer
      */
     @GetMapping("/create/{name}")
 	@ResponseBody
-	public User createUserController(@PathVariable("name") String name) {
-		UserService u = new UserService();
-		if(u.createUser(name) == 1) {
-			return u.findUserAccount(name);
-		}
-		return null;
+	public int createUser(@PathVariable("name") String name) {
+		return userService.createUser(name);
 	}
     
     /**
      * Met a jour la liste de favoris d'un utilisateur 
      * @param word Mot a mettre a jour
-     * @param username Compte de l'utilisateur en question
+     * @param language Langue choisie
+     * @param username Utilisateur en question
      * @param method Add ou Delete
      */
-    @GetMapping("/updateFavorites/{word}/{username}/{method}")
+    @GetMapping("/updateFavorites/{word}/{language}/{username}/{method}")
 	@ResponseBody
-	public int addFavoriteController(@PathVariable(name="word") String name, 
+	public int addFavoriteController(@PathVariable(name="word") String word, @PathVariable(name="language") String language, 
 			@PathVariable(name="username") String username, @PathVariable (name="method") String method) {
-		UserService u = new UserService();
-		return u.updateFavorites(name, username, method);
+		return userService.updateFavorites(word, language, username, method);
 	}
+    
+    /**
+	 * Supprimer un user de la bdd
+	 * Retourne 0 si le user a bien ete supprime 
+	 * Retourne 1 si le user n'a pas ete supprime 
+	 * Retourne 2 si le user a supprimer n'existe pas 
+	 * @param user User a supprimer
+	 * @return int Reponse de retour de la methode 
+	 */
+	@GetMapping(value= "delete/{user}")
+	public int deleteUser(@PathVariable(name="user") String user) {
+		return userService.deleteUserService(user);
+	}
+	
+	
 }

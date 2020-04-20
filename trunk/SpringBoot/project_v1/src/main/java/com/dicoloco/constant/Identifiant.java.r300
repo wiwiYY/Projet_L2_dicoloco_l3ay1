@@ -16,8 +16,8 @@ public class Identifiant {
 	
 	//Mdp de MySQL
 //	private String password = "root1234";
-	private String password = "admin";
-
+	private String password = "iroker9";
+	
 	//Nom de la DataBase de MySQL
 //	private String dbname = "databasel3";
 	private String dbname = "word";

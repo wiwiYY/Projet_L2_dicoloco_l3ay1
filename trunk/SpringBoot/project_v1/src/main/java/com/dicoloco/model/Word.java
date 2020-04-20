@@ -38,7 +38,6 @@ public class Word {
 	@JsonProperty("language")
 	private String language;
 	
-	private boolean changedSynonym;
 	
 	public Word() {
 		
@@ -53,7 +52,6 @@ public class Word {
 		this.category = category;
 		this.synonyms = synonyms;
 		this.language = language;
-		this.changedSynonym = false;
 	}
 
 	public String getName() {
@@ -64,12 +62,12 @@ public class Word {
 		this.name = name;
 	}
 
-	public List<String> getDefinition() {
+	public List<String> getDefinitions() {
 		return definitions;
 	}
 
-	public void setDefinition(List<String> definition) {
-		this.definitions = definition;
+	public void setDefinitions(List<String> definitions) {
+		this.definitions = definitions;
 	}
 
 	public String getGender() {
@@ -103,13 +101,7 @@ public class Word {
 	public void setLanguage(String language) {
 		this.language = language;
 	}
-	public boolean getChangedSynonym() {
-		return changedSynonym;
-	}
-	public void setChangedSynonym(boolean changedSynonym) {
-		this.changedSynonym = changedSynonym;
-	}
-
+	
 	@Override
 	public String toString() {
 		StringBuffer result = new StringBuffer();
