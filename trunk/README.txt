@@ -50,7 +50,7 @@ Google Chrome ou Microsoft Edge : Pour le navigateur web
 Une fois la configuration terminée, 
  - Créez une database en retenant le nom choisi pour celle-ci 
 
-Ensuite, allez à (Projet_L3AY1\trunk\dicoloco.sql) : 
+Ensuite, allez à (Projet_L3AY1\trunk\projet_L3AY1_Dicoloco\dicoloco.sql) : 
  - Ouvrez le fichier 
  - Copiez le contenu, Collez-le et lancez le script SQL sur la database crée sur MySQL
 
@@ -65,11 +65,11 @@ L'installation du projet est terminée.
 ## Démarrage 
 
 1) Le Back-end sur Spring Tool Suite 
- - Puis, allez à (Projet_L3AY1\trunk\Back-End\project_v1\src\main\java\com\dicoloco\DicolocoApplication.java)
+ - Puis, allez à (Projet_L3AY1\trunk\projet_L3AY1_Dicoloco\Back-End\project_v1\src\main\java\com\dicoloco\DicolocoApplication.java)
  - Et lancez le projet
 
 2) L'interface client de l'applcation web
- - Allez à (Projet_L3AY1\trunk\Front\html\dicoloco_index.html)
+ - Allez à (Projet_L3AY1\trunk\projet_L3AY1_Dicoloco\Front\html\dicoloco_index.html)
  - Ouvrez le fichier sur un navigateur web
 
 Le démarrage du projet est terminé. 
