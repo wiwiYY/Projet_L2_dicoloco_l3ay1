@@ -134,12 +134,13 @@
                                 <div class="form-group">
                                     <label for="Type">Langue</label>
                                     <select class="custom-select" id="languageAdd" name="typeAdd">
-                                        <option value="fr">Français</option>
                                         <option value="en">Anglais</option>
+                                        <option value="fr">Français</option>
                                     </select>
                                 </div>
-                                <!-- méthode pour ajouter un mot à la bdd -->
-                                <button onclick="createWord()" type="button" class="btn btn-success center-block">Ajouter le mot</button>
+                                <div class="text-center">
+                                    <button onclick="createWord()" type="button" class="btn btn-success center-block">Ajouter le mot</button>
+                                </div>
                             </div>
 
                             <!-- Ajouter une liste de mot-->
@@ -173,7 +174,9 @@
                                         </select><br><br>
                                         <input type="file" class="form-control-file" id="inputFile"><br>
                                     </div>
-                                    <button onclick="addList()" type="button" class="btn btn-success text-center">Ajouter la liste</button><br><br>
+                                    <div class="text-center">
+                                        <button onclick="addList()" type="button" class="btn btn-success text-center">Ajouter la liste</button><br><br>
+                                    </div>
                                 </div>
 
                                 <hr><br><br>
@@ -190,7 +193,9 @@
                                     </select><br>
                                     <!-- méthode pour supprimer un mot à la bdd -->
                                 </div>
-                                <button onclick="deleteWord() " onclick="" type="SupprimerMot" class="btn btn-danger center-block" style="float: none;">Supprimer le mot</button>            
+                                <div class="text-center">
+                                    <button onclick="deleteWord() " onclick="" type="SupprimerMot" class="btn btn-danger center-block" style="float: none;">Supprimer le mot</button>   
+                                </div>
                             </div>
                         </div>
                         <div class="col-sm-12 col-md-12 text-center">

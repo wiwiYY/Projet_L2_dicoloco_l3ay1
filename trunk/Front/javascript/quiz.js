@@ -17,11 +17,9 @@ function generePosition(){
     var res = "";
     var alphabet = "abcd";
     res += alphabet[Math.floor(Math.random() * alphabet.length)];
-    // console.log(res);
     return res;
 }
 function reponse(word, language, number) {
-    // console.log("je recois en reponse: "+word+", " +language+", "+number+".");
     var requestURL = urlAPI + "/word/searchByLanguage/"+word +"/"+ language;
     var request = new XMLHttpRequest();
     request.open('GET', requestURL);
@@ -45,8 +43,6 @@ function reponse(word, language, number) {
         }
         
         reponseGenerator(questionD, mot['name'], answersD, number);
-
-        // console.log("question généré");
     }
 }
 
@@ -54,8 +50,6 @@ function reponse(word, language, number) {
  * genere la reponse 
  */
 function reponseGenerator(questionD, noWord, noSynonym, number){
-
-    // console.log('je recois ########### '+noWord+', '+noSynonym+', '+number);
     var reqURL = urlAPI + "/word/getRandomAnswer/"+noWord+"/"+noSynonym;
     var req = new XMLHttpRequest();
     req.open('GET', reqURL);
@@ -63,7 +57,6 @@ function reponseGenerator(questionD, noWord, noSynonym, number){
     req.send();
     req.onload = function () {
         var word = req.response;
-        // console.log("resultat ", word);
         correctAnswerD = generePosition();
 
         //genere la question au format json
@@ -83,7 +76,6 @@ function reponseGenerator(questionD, noWord, noSynonym, number){
 
             if(letter === correctAnswerD){
                 jsonQ.answers[letter] = capitalizeFirstLetter(noSynonym);
-                // console.log("le bon resultat de "+noWord+" est "+noSynonym);
             }
             else {
                 jsonQ.answers[letter] = word[positionFalseAnswer]['name'];
@@ -91,7 +83,6 @@ function reponseGenerator(questionD, noWord, noSynonym, number){
             positionFalseAnswer++;
         }
         //asignement de la question à quel chiffre
-        // console.log("le mot "+noWord+", le n°"+number);
         switch(number){
             case 0: q1 = jsonQ; break;
             case 1: q2 = jsonQ; break;
@@ -128,7 +119,6 @@ function startQuizz() {
             for (var i = 0; i < wordList.length; i++) {
 
                 if (wordList[i] != null) {
-                    // console.log("le mot n°" + i + " : " + wordList[i]['name'] + " et la langue :"+wordList[i]['language']);
                     reponse(wordList[i]['name'], wordList[i]['language'], i);
                 }
             }
@@ -166,7 +156,6 @@ function generateQuizz() {
                 for (letter in currentQuestion.answers) {
 
                     // ...add an HTML radio button
-                    // console.log('ici : ' + questionNumber);
                     answers.push(
                         `<label>
                         <input type="radio" name="question${questionNumber}" value="${letter}">&nbsp;&nbsp;&nbsp;&nbsp;
@@ -244,7 +233,6 @@ function generateQuizz() {
  */
 function startLoading(){
     endLoading();
-    console.log('loading start');
     var div = document.getElementById('loading_body');
     var diva = document.createElement('div');
     diva.id = 'toEndLater';
@@ -260,7 +248,6 @@ function endLoading(){
     if(document.getElementById('toEndLater') !== null) {
         var toHideSection = document.getElementById('toEndLater');
         toHideSection.remove();
-        console.log('loading end');
     }
 }
   function createSubmit(){

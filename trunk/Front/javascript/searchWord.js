@@ -8,11 +8,11 @@ var nbLangue = 1;
  */
 function searchWord() {
     startLoading();
+    redirectAncreLoading();
 
     var name = document.getElementById("name").value;
     var language = document.getElementById("languageDico").value;
     localStorage.setItem('Language', language);
-    //TODO 
     localStorage.setItem('WordName', name);
 
     if (name != "") {
@@ -31,7 +31,6 @@ function searchWord() {
         request.open('GET', requestURL);
         request.responseType = 'json';
         request.send();
-
         
         // Section réponse stocké
         request.onload = function () {
@@ -95,7 +94,7 @@ function searchSugg(name, language) {
  */
 function searchWord2(numSyn) {
     startLoading();
-    console.log("numSyn : "+numSyn)
+    redirectAncreLoading();
     var word = document.getElementById("synonymeNum" + numSyn).textContent; //ou utiliser innerHTML si y a un pb
     
     var languageChoose = localStorage.getItem('Language');
@@ -123,6 +122,7 @@ function searchWord2(numSyn) {
 /*Recherche un mot depuis la liste de traduction*/
 function searchWord2b(language, word) {
     startLoading();
+    redirectAncreLoading();
     // Supprimer le html pour le reload plus tard
     var toHideSection = document.getElementById('toHideSection');
     toHideSection.remove();
@@ -146,12 +146,10 @@ var word = "";
  */
 function searchWord3(word) {
     startLoading();
+    redirectAncreLoading();
     // Supprimer le html pour le reload plus tard
     var element = document.getElementById("favToSearch"+word).textContent;
     var elementTab = element.split(' | ');
-
-    console.log(elementTab[0]); 
-    console.log(elementTab.length);
 
     if(document.getElementById('toHideSection') !==null) {
         var toHideSection = document.getElementById('toHideSection');
@@ -163,8 +161,6 @@ function searchWord3(word) {
         toHideSuggestion.remove();
     }
 
-    console.log("TEST : "+elementTab[0]+", "+elementTab[1]+", length : "+elementTab.length);
-
     var requestURL = urlAPI + "/word/searchByLanguage/"+elementTab[0]+"/"+elementTab[1];
     var request2 = new XMLHttpRequest();
     request2.open('GET', requestURL);
@@ -174,8 +170,6 @@ function searchWord3(word) {
     // Section réponse stocké
     request2.onload = function () {
         var word = request2.response;
-        console.log(word);
-        console.log(word['language']);
         localStorage.setItem("Language", word['language']);
         generateHtml(word);
     }
@@ -187,6 +181,7 @@ function searchWord3(word) {
  */
 function searchWord4(number) {
     startLoading();
+    redirectAncreLoading();
     // Supprimer le html pour le reload plus tard
     var suggestionSelected = document.getElementById("suggestion"+number).textContent;
     var languageChoose = localStorage.getItem('Language');
@@ -219,12 +214,10 @@ function searchWord4(number) {
  */
 function searchWord5(word) {
     startLoading();
+    redirectAncreLoading();
     // Supprimer le html pour le reload plus tard
     var element = document.getElementById("tradToSearch"+word).textContent;
     var elementTab = element.split(' | ');
-
-    console.log(elementTab[0]); 
-    console.log(elementTab.length);
 
     if(document.getElementById('toHideSection') !==null) {
         var toHideSection = document.getElementById('toHideSection');
@@ -236,8 +229,6 @@ function searchWord5(word) {
         toHideSuggestion.remove();
     }
 
-    console.log("TEST : "+elementTab[0]+", "+elementTab[1]+", length : "+elementTab.length);
-
     var requestURL = urlAPI + "/word/searchByLanguage/"+elementTab[0]+"/"+elementTab[1];
     var request2 = new XMLHttpRequest();
     request2.open('GET', requestURL);
@@ -247,8 +238,6 @@ function searchWord5(word) {
     // Section réponse stocké
     request2.onload = function () {
         var word = request2.response;
-        console.log(word);
-        console.log(word['language']);
         localStorage.setItem("Language", word['language']);
         generateHtml(word);
     }
@@ -281,7 +270,16 @@ function createTraductionList(numTrad, word) {
     var li = document.createElement('li');
     ul.appendChild(li);
     li.innerHTML = ` <button class="btn btn-outline-secondary btn-sm" id="tradToSearch` + numTrad + `" class="className3" onClick="searchWord5(` + numTrad + `)" >`+word['name']+` | `+word['language']+`</button>`;
+}
 
+/**
+ * Générer un message lorsqu'il n'y a pas de traduction
+ */
+function createNoTraductionList() {
+    var ul = document.getElementById('wordTraduction');
+    var li = document.createElement('div');
+    ul.appendChild(li);
+    li.innerHTML = `<p>Aucune traduction disponible pour ce mot</p>`;
 }
 
 /**
@@ -300,7 +298,6 @@ function createSynonymListModal(mot) {
  * @param {word} jsonObj 
  */
 function generateHtml(jsonObj ) {
-    console.log("new meta");
     // Condition si le html de definition est généré
     if (document.querySelector('section') == null) {
         // Condition si exist affichage à cacher
@@ -327,6 +324,12 @@ function generateHtml(jsonObj ) {
     var defs = jsonObj['definitions'];
     const defs1 = JSON.stringify(defs);
     var resDefs = defs1.split('_');
+    var afficheDef = 0;
+    var moreThanThreeDef = false;
+
+    var toHideSection = document.getElementById('buttonForDef');
+    toHideSection.remove();
+
     for(var j = 0; j<resDefs.length-1; j++){
         var definition = null;
         //supprimer les symbole inutle à l'affichage car cela créé un bug
@@ -342,12 +345,30 @@ function generateHtml(jsonObj ) {
         else{ //les éléments intermédiaires si y'a plusieurs
             definition = resDefs[j].substring(3, resDefs[j].length);
         }
-        var p = document.getElementById('wordDefinition');
-        var writeDef = document.createElement('p');
-        p.appendChild(writeDef);
-        writeDef.innerHTML = definition +'<hr>';
 
-        //console.log("le "+j+"ième élément correspont à : "+definition);
+        if(afficheDef < 3) {
+            var p = document.getElementById('wordDefinition');
+            var writeDef = document.createElement('p');
+            p.appendChild(writeDef);
+            writeDef.innerHTML = definition + '<hr>';
+            afficheDef++;
+        } else {
+            var p = document.getElementById('wordDefinition2');
+            var writeDef = document.createElement('p');
+            p.appendChild(writeDef);
+            writeDef.innerHTML = definition +'<hr>';
+            moreThanThreeDef = true;
+        }
+    }
+    
+    if (moreThanThreeDef === true) {
+        var button = document.createElement('button');
+        button.setAttribute("class", "btn btn-outline-secondary");
+        button.setAttribute("id", "buttonForDef");
+        button.setAttribute("data-toggle", "collapse");
+        button.setAttribute("data-target", "#DefInfo");
+        button.innerHTML = `+ de définitions`;
+        document.getElementById('showDefButton').appendChild(button);
     }
 
     // Split les synonymes de word
@@ -402,12 +423,9 @@ function generateHtml(jsonObj ) {
             }
             // ajout de l'élément
             createSynonymListModal(mot);
-
-            /* document.getElementById('synonymeNumModal' + i).textContent = mot; //inneHTML ou textContent */
         }
     }
 
-    console.log("la langue "+jsonObj['language']);
     //genere la liste des traduction 
     if (jsonObj['language']==="fr"){
         
@@ -448,9 +466,20 @@ function defNameGenerator() {
                         <div class="col-sm-4 col-md-4">
                             <h3 class="font-weight-light">Définition(s)</h3>
                         </div>
+
                         <div class="col-sm-8 col-md-8">
-                            <p id="wordDefinition">
-                            </p>
+                            <div>
+                                <p id="wordDefinition"></p>
+                            </div>
+                            <div>
+                                <a id="showDefButton">
+                                    <button class="btn btn-outline-secondary" id="buttonForDef" data-toggle="collapse" data-target="#DefInfo">+ de définitions</button>
+                                </a>
+                                <div id="DefInfo" class="collapse">
+                                    <div id="wordDefinition2"><br>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div><br>
                     
@@ -465,27 +494,27 @@ function defNameGenerator() {
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel">Modification</h5>
+                                            <h3 class="modal-title" id="exampleModalLabel">Modification</h5>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
                                         <div class="modal-body">
-                                            <h3 class="font-weight-light">Ajouter un synonyme au mot</h3>
+                                            <h5 class="font-weight-light">Ajouter un synonyme</h3>
                                             <input type="text" id="synonymAdd" class="form-control" placeholder=""><br>
 
-                                            <h3 class="font-weight-light">Supprimer un synonyme au mot</h3>
+                                            <h5 class="font-weight-light">Supprimer un synonyme</h3>
                                             <input type="text" id="synonymDelete" class="form-control" placeholder=""><br>
 
                                             <!-- génère la liste de synonym dans le Modal -->
-                                            <h3 class="font-weight-light">ou cliquez sur le mot que vous souhaitez supprimer :</h3>
+                                            <h5 class="font-weight-light">ou cliquez sur le synonyme que vous souhaitez supprimer :</h3>
                                             <ul id="wordSynonymsModal">
                                             </ul>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
-                                            <button type="button" onclick="addingSynonym()" class="btn btn-outline-success">ajouter</button>
-                                            <button type="button" onclick="deletingSynonym()" class="btn btn-outline-danger">supprimer</button>
+                                            <button type="button" onclick="addingSynonym()" class="btn btn-outline-success">Ajouter</button>
+                                            <button type="button" onclick="deletingSynonym()" class="btn btn-outline-danger">Supprimer</button>
                                         </div>
                                     </div>
                                 </div>
@@ -548,7 +577,6 @@ function defNameGenerator() {
                 }
             }
             if(exist){
-                /* generateButtonFavorite.innerHTML += `<button type="button" onclick="deleteFavoris()" class="btn btn-warning">enlever des favoris</button>`; */
                 generateButtonFavorite.innerHTML += `<a id="deleteFavoris" onclick="deleteFavoris()">
                 <!--généré par searchWord.js -->
                 <img src="../img/fav_icon_3.png" width="40px" height="40px" alt="" onmouseover="this.src='../img/fav_icon_1.png';" onmouseout="this.src='../img/fav_icon_3.png';" 
@@ -556,7 +584,6 @@ function defNameGenerator() {
                 </a>`;
             }
             else{
-                /* generateButtonFavorite.innerHTML += `<button id="favorisAdd" onclick="addingFavoris()" type="button" class="btn btn-outline-warning">ajouter aux favoris</button>`; */
                 generateButtonFavorite.innerHTML += `<a id="favorisAdd" onclick="addingFavoris()">
                 <!--généré par searchWord.js -->
                 <img src="../img/fav_icon_1.png" width="40px" height="40apx" alt="" onmouseover="this.src='../img/fav_icon_3.png';" onmouseout="this.src='../img/fav_icon_1.png';" 
@@ -596,6 +623,7 @@ function generateSuggestionHtml(name){
     redirectAncre();  
 }
 
+/* Fonction qui genere la traduction du mot en question */
 function generateTraduction(language, nbMot){
     var wordName = document.getElementById('wordName').textContent;
     var requestURL = urlAPI + "/word/translation/" + wordName +"/"+ language;
@@ -608,30 +636,29 @@ function generateTraduction(language, nbMot){
     request.onload = function () {
         
         var word = request.response;
-        console.log('mot : ->> '+word['name']);
-        if(word['name'] == undefined){
-            console.log("le mot est undefined")
+        if(word == null){
+            createNoTraductionList();
         }else{
-            console.log("le mot existe")
             for (var i=0; i<nbMot; i++){  
-                console.log("le chiffe dla boucle : "+i)
                 createTraductionList(i , word);
-                // document.getElementById("#traductionNum"+i).innerHTML = ` `+word['name'] +` | `+word['language'];
             }
         }
     }
 }
+
+/* Fonction qui redirige sur l'endroit de la page ou il y a la definition  */
 function redirectAncre() {
-    //document.location.href='#ancre';
     window.scroll(0,700);
 }
 
-/**
- * Affiche/Enleve le loading 
- */
+/* Fonction qui redirige sur l'endroit de la page ou il y a le laoding */
+function redirectAncreLoading() {
+    window.scrollTo(0,0);
+}
+
+/* Affiche/Enleve le loading */
 function startLoading(){
     endLoading();
-    console.log('loading start');
     var div = document.getElementById('loading_body');
     var diva = document.createElement('div');
     diva.id = 'toEndLater';
@@ -643,10 +670,10 @@ function startLoading(){
     </div>`;
 }
 
+/* Fonction qui met fin au Loading */
 function endLoading(){    
     if(document.getElementById('toEndLater') !== null) {
         var toHideSection = document.getElementById('toEndLater');
         toHideSection.remove();
-        console.log('loading end');
     }
 }

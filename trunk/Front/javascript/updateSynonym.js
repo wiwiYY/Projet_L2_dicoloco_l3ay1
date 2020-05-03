@@ -70,7 +70,7 @@ function deletingSynonym () {
             } else if (response == 3) {
                 alert("Erreur : Le synonyme "+synonymDelete+" n'existe pas dans la liste de synonyme du mot");
             } else {
-                alert("Erreur message de réponse par défaut : Contacter nous afin de régler ce problème");
+                alert("Erreur : Ce mot a déjà été supprimé de la bdd");
             }
         }
     } else {
@@ -103,7 +103,7 @@ function deleteSynonym (numSyn) {
         } else if (response == 3) {
             alert("Erreur : Le synonyme "+synonymDelete+" n'existe pas dans la liste de synonyme du mot");
         } else {
-            alert("Erreur message de réponse par défaut : Contacter nous afin de régler ce problème");
+            alert("Erreur : Ce mot a déjà été supprimé de la bdd");
         }
     }
 }

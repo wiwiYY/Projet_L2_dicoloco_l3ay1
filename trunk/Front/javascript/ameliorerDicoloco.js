@@ -53,7 +53,7 @@ function createWord() {
 
         result.push(obj);
         
-        xhttp.open("POST", "http://localhost:8080/word/listWords", true);
+        xhttp.open("POST", urlAPI + "/word/listWords", true);
         xhttp.setRequestHeader("content-type", "application/json;charset=UTF-8");
         xhttp.send(JSON.stringify(result));
        
@@ -64,14 +64,12 @@ function createWord() {
             var response = xhttp.response;
 
             if (response == 0) {
-                alert("Succès : Le mot '" + nameAdd + "' a bien été ajouté au dictionnaire.");
+                alert("Succès : Le mot '" + nameAdd + "' ("+languageAdd+") a bien été ajouté au dictionnaire.");
                 document.location.href = "dicoloco_ameliorer.html";
             } else if (response == 1) {
                 alert("Erreur : Le mot '" + nameAdd + "' n'a pas été ajouté au dictionnaire! Veuillez vérifier la langue ou la syntaxe.");
-                document.location.href = "dicoloco_ameliorer.html";
             } else if (response == 2) {
-                alert("Erreur : Le mot '" + nameAdd + "' existe déjà dans ce dictionnaire !");
-                document.location.href = "dicoloco_ameliorer.html";
+                alert("Erreur : Le mot '" + nameAdd + "' ("+languageAdd+") existe déjà dans ce dictionnaire !");
             } else {
                 alert("Erreur : La fonctionnalité Ajouter rencontre actuellement un problème technique, Veuillez nous contacter !");
                 document.location.href = "dicoloco_ameliorer.html";
@@ -283,7 +281,6 @@ function startLoading() {
         var toHideSection = document.getElementById('toEndLater');
         toHideSection.remove();
     }
-    console.log('loading start');
     var div = document.getElementById('loading_body');
     var diva = document.createElement('div');
     diva.id = 'toEndLater';
@@ -298,7 +295,6 @@ function startLoading() {
 function endLoading() {
     var div = document.getElementById('toEndLater');
     div.parentNode.removeChild(div);
-    console.log('loading end');
 }
 
 /* Fonction pour ajouter une liste de mots à partir de fichier JSON
@@ -325,7 +321,7 @@ function addListBdd() {
             alert(JSON.stringify(result));
 
             var xhr = new XMLHttpRequest();
-            xhr.open("POST", "http://localhost:8080/word/listWordsFr", true);
+            xhr.open("POST", urlAPI + "/word/listWordsFr", true);
             xhr.setRequestHeader("content-type", "application/json;charset=UTF-8");
            
         xhr.send(JSON.stringify(result));   
