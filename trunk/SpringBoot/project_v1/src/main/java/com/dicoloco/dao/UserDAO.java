@@ -1,5 +1,8 @@
 package com.dicoloco.dao;
+import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -13,16 +16,20 @@ import com.dicoloco.model.User;
 public class UserDAO {
 
 	/**
-	 * Retourne une liste contenant les utilisateurs 
-	 * @return List<User> liste d'utilisateurs
+	 * Methode getAllUsers : Recherche tous les utilisateurs de la base de donnee
+	 * @return la liste d'utilisateurs trouve
 	 */
 	public List<User> getAllUsers(){
 
 		List <User>listUsers = new ArrayList<>();
+		Identifiant mySqlId = new Identifiant();
+		Connection myConn = null;
+		Statement stmt = null;
 
 		try {
-			Identifiant mySqlId = new Identifiant();
-			ResultSet myRs = (mySqlId.getStatement()).executeQuery("select * from user");
+			myConn = mySqlId.getConnection();
+			stmt = myConn.createStatement();
+			ResultSet myRs = stmt.executeQuery("select * from user");
 
 			while(myRs.next()) {
 				List<String> favorites = new ArrayList<>();
@@ -35,20 +42,28 @@ public class UserDAO {
 				listUsers.add(new User(myRs.getString("name"), favorites));
 			}	
 		}catch(Exception e) {
-			e.printStackTrace();
+			System.out.println("Erreur de connexion à la base de donnees - UserDAO.getAllUsers");
+		}finally {
+			try {
+				myConn.close();
+				stmt.close();
+			} catch (SQLException e) {
+				System.out.println("Erreur lors de la deconnexion à la base de donnees - UserDAO.getAllUsers");
+			}
 		}
 		return listUsers;
 	}
-
 	/**
-	 * Cherche l'utilisateur correspondant au nom
+	 * Methode finUserAccount : Cherche les information de l'utilisateur
 	 * @param userName Nom de l'utilisateur 
-	 * @return User Un utilisateur ou bien null
+	 * @return User les information de l'utilisateur ou bien null s'il ne la pas trouve
 	 */
 	public User findUserAccount(String userName) {
 
 		ResultSet myRs = null;
 		User user = null;
+		Connection myConn = null;
+		Statement stmt = null;
 
 		try {
 			StringBuffer sql = new StringBuffer();
@@ -58,7 +73,9 @@ public class UserDAO {
 			sql.append("'");
 
 			Identifiant mySqlId = new Identifiant();
-			myRs = (mySqlId.getStatement()).executeQuery(sql.toString());
+			myConn = mySqlId.getConnection();
+			stmt = myConn.createStatement();
+			myRs = stmt.executeQuery(sql.toString());
 
 			while(myRs.next()) {
 				List<String> favorites = new ArrayList<>();
@@ -72,17 +89,27 @@ public class UserDAO {
 				System.out.println("Name : "+myRs.getString("name")+" , Favorites : "+ myRs.getString("favorites"));
 			}
 		}catch(Exception e) {
-			e.printStackTrace();
+			System.out.println("Erreur de connexion à la base de donnees - UserDAO.findUserAccount");
+		}finally {
+			try {
+				myConn.close();
+				stmt.close();
+			} catch (SQLException e) {
+				System.out.println("Erreur lors de la deconnexion à la base de donnees - UserDAO.findUserAccount");
+			}
 		}
 		return user;
 	}
+		
 
 	/**
-	 * Creer un nouvel utilisateur 
-	 * @param name Nom du nouvel utilisateur
+	 * Methode createUser : Creer un nouvel utilisateur
+	 * @param name Nom du nouvel utilisateur a cree
 	 */
 	public void createUser(String name) {
-
+		
+		Connection myConn = null;
+		Statement stmt = null;
 		try {  
 			Identifiant mySqlId = new Identifiant();
 			StringBuffer sql = new StringBuffer();
@@ -91,19 +118,30 @@ public class UserDAO {
 			sql.append(name);
 			sql.append("','')");
 
-			(mySqlId.getStatement()).executeUpdate(sql.toString());
+			myConn = mySqlId.getConnection();
+			stmt = myConn.createStatement();
+			stmt.executeUpdate(sql.toString());
 		}catch(Exception e) {
-			e.printStackTrace();
+			System.out.println("Erreur de connexion à la base de donnees - UserDAO.createUser");
+		}finally {
+			try {
+				myConn.close();
+				stmt.close();
+			} catch (SQLException e) {
+				System.out.println("Erreur connexion lors de la deconnexion à la base de donnees - UserDAO.createUser");
+			}
 		}
 	}
 
 	/**
-	 * Met a jour la liste de favoris d'un utilisateur 
+	 * Methode updateFavoritesList : Met a jour la liste de favoris d'un utilisateur 
 	 * @param userName Nom de l'utilisateur
 	 * @param favoritesList Liste de Favoris de l'utilisateur 
 	 */
 	public void updateFavoritesList(String userName, String favoritesList) {
 
+		Connection myConn = null;
+		Statement stmt = null;
 		try {
 			Identifiant mySqlId = Identifiant.getInstance();
 			StringBuffer sql = new StringBuffer();
@@ -114,21 +152,32 @@ public class UserDAO {
 			sql.append(userName);
 			sql.append("'");
 
-			(mySqlId.getStatement()).executeUpdate(sql.toString());
+			myConn = mySqlId.getConnection();
+			stmt = myConn.createStatement();
+			stmt.executeUpdate(sql.toString());
 		}catch(Exception e) {
-			e.printStackTrace();
+			System.out.println("Erreur de connexion à la base de donnees - UserDAO.updateFavoritesList");
+		}finally {
+			try {
+				myConn.close();
+				stmt.close();
+			} catch (SQLException e) {
+				System.out.println("Erreur lors de la deconnexion à la base de donnees - UserDAO.updateFavoritesList");
+			}
 		}
 	}	
 	
 	/**
-	 * Supprime un user de la bdd
-	 * Retourne 0 si le user a bien ete supprime 
-	 * Retourne 1 si le user n'a pas ete supprime 
-	 * @param user  
+	 * Methode deleteUser : Supprime un utilisateur de la base de donnee
+	 * Retourne 0 si l'utilisateur a bien ete supprime 
+	 * Retourne 1 si l'utilisateur n'a pas ete supprime 
+	 * @param user le nom de l'utilisateur a supprimer
 	 * @return int Reponse de retour de la methode
 	 */
 	public int deleteUser(String user) {
-				
+		
+		Connection myConn = null;
+		Statement stmt = null;
 		try {
 			Identifiant mySqlId = new Identifiant();
 			StringBuffer sql = new StringBuffer();
@@ -137,10 +186,19 @@ public class UserDAO {
 			sql.append(user);
 			sql.append("'");
 			
-			(mySqlId.getStatement()).executeUpdate(sql.toString());
+			myConn = mySqlId.getConnection();
+			stmt = myConn.createStatement();
+			stmt.executeUpdate(sql.toString());
 
 		}catch(Exception e) {
-			e.printStackTrace();
+			System.out.println("Erreur de connexion à la base de donnees - UserDAO.deleteUser");
+		}finally {
+			try {
+				myConn.close();
+				stmt.close();
+			} catch (SQLException e) {
+				System.out.println("Erreur lors de la deconnexion à la base de donnees - UserDAO.deleteUser");
+			}
 		}
 		
 		if (findUserAccount(user) == null) {
@@ -150,22 +208,45 @@ public class UserDAO {
 		}
 	}
 
+	/**
+	 * Methode removeAllUsers : Supprime tous les utilisateurs de la base de donnee
+	 * Attention methode sans retour
+	 */
 	public void removeAllUsers() {
+		Connection myConn = null;
+		Statement stmt = null;
 		try {
 			Identifiant mySqlId = new Identifiant();
 			StringBuffer sql = new StringBuffer();
 			
 			sql.append("delete from user");
 			
-			(mySqlId.getStatement()).executeUpdate(sql.toString());
+			myConn = mySqlId.getConnection();
+			stmt = myConn.createStatement();
+			stmt.executeUpdate(sql.toString());
 
 		}catch(Exception e) {
-			e.printStackTrace();
+			System.out.println("Erreur de connexion à la base de donnees - UserDAO.removeAllUsers");
+		}finally {
+			try {
+				myConn.close();
+				stmt.close();
+			} catch (SQLException e) {
+				System.out.println("Erreur lors de la deconnexion à la base de donnees - UserDAO.removeAllUsers");
+			}
 		}
+	
 	
 	}
 
+
+	/**
+	 * Methode addUsers : ajoute une liste d'utilisateur
+	 * @param users listes contenant les informations de chaque utilisateur a ajouter
+	 */
 	public void addUsers(List<User> users) {
+		Connection myConn = null;
+		Statement stmt = null;
 		try {  
 			Identifiant mySqlId = new Identifiant();
 			StringBuffer sql = new StringBuffer();
@@ -191,10 +272,18 @@ public class UserDAO {
 				}
 			}
 
-			(mySqlId.getStatement()).executeUpdate(sql.toString());
+			myConn = mySqlId.getConnection();
+			stmt = myConn.createStatement();
+			stmt.executeUpdate(sql.toString());
 		}catch(Exception e) {
-			e.printStackTrace();
+			System.out.println("Erreur de connexion à la base de donnees - UserDAO.addUsers");
+		}finally {
+			try {
+				myConn.close();
+				stmt.close();
+			} catch (SQLException e) {
+				System.out.println("Erreur lors de la deconnexion à la base de donnees - UserDAO.addUsers");
+			}
 		}
 	}
-	
 }

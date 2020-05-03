@@ -24,9 +24,9 @@ public class UserController {
 	}
     
     /**
-     * Recupere les informations d'un utilisateur
-     * @param name
-     * @return User L'utilisateur 
+     * Methode getUserInfo : Recupere les informations d'un utilisateur dans la base de donnee
+     * @param name le nom de l'utilisateur
+     * @return User les informations de l'utilisateur 
      */
     @GetMapping(value ="/login/{name}")
 	public User getUserInfo(@PathVariable(name="name") String name) {
@@ -35,8 +35,8 @@ public class UserController {
     }
     
     /**
-     * Recupere la liste des utilisateurs
-     * @return la liste des utilisateurs
+     * Methode getUsers : Recupere la liste des utilisateurs dans la base de donnee
+     * @return la liste des utilisateurs retrouve
      */
     @RequestMapping(value = "/getUsers", method = RequestMethod.GET)
     public List<User> getUsers(){
@@ -44,9 +44,9 @@ public class UserController {
     }
     
     /**
-     * Ajout d'un nouvel utilisateur 
-     * @param name
-     * @return User l'utilisateur creer
+     * Methode createUser : Creation d'un nouvel utilisateur avec le nom en parametre
+     * @param name le nom du nouvelle utilisateur
+     * @return User les informations de l'utilisateur creer
      */
     @GetMapping("/create/{name}")
 	@ResponseBody
@@ -55,7 +55,7 @@ public class UserController {
 	}
     
     /**
-     * Met a jour la liste de favoris d'un utilisateur 
+     * Methode addFavoriteController : Met a jour la liste de favoris d'un utilisateur 
      * @param word Mot a mettre a jour
      * @param language Langue choisie
      * @param username Utilisateur en question
@@ -69,11 +69,11 @@ public class UserController {
 	}
     
     /**
-	 * Supprimer un user de la bdd
+	 * Methode deleteUser : Supprime un utilisateur de la base de donnee
 	 * Retourne 0 si le user a bien ete supprime 
 	 * Retourne 1 si le user n'a pas ete supprime 
 	 * Retourne 2 si le user a supprimer n'existe pas 
-	 * @param user User a supprimer
+	 * @param user le nom de l'utilisateur a supprimer
 	 * @return int Reponse de retour de la methode 
 	 */
 	@GetMapping(value= "delete/{user}")

@@ -27,57 +27,15 @@ public class WordService {
 		
 	}
 	
-	/** 
-	 * Permet de mettre la premiere lettre du mot
-	 * en majuscule
-	 * @param value
-	 */
-	public static String upperCaseFirst(String value) {
-        char[] listChar = value.toCharArray();
-        listChar[0] = Character.toUpperCase(listChar[0]);
-        return new String(listChar);
-    }
 	
 	/**
-	 * Cherche et retourne le mot recherche
-	 * @param name
-	 * @return le mot recherche ou null si pas trouve
-	 */
-	/*TODO
-	public Word findWordByName(String name){
-		String nameUpper = upperCaseFirst(name);
-		Word found = wordDao.findWord(nameUpper);
-		System.out.println("2found :"+found);
-		List<String> definitions = new ArrayList<>();
-		
-		if(found != null) {
-			for(int i=0; i<found.getDefinitions().size(); i++) {
-				StringBuffer defBuffer = new StringBuffer();
-				
-				String definitionFound = found.getDefinitions().get(i);
-				definitionFound = definitionFound.replace("\n", "");
-				
-				defBuffer.append(definitionFound);
-				defBuffer.append("_");
-				
-				definitions.add(i, defBuffer.toString());
-			}
-			found.setDefinitions(definitions);
-			return found;
-		}
-		return null;
-	}
-	*/
-	
-	/**
-	 * Cherche et retourne le mot recherche selon la langue 
-	 * @param name
-	 * @param language
+	 * Methode findWordByNameLanguage : cherche et retourne le mot recherche selon la langue 
+	 * @param name le nom du mot
+	 * @param language la langue du mot
 	 * @return le mot recherche ou null si pas trouve
 	 */
 	public Word findWordByNameLanguage(String name, String language){
-		String nameUpper = upperCaseFirst(name);
-		//TODO a modif peut etre
+		String nameUpper = name;
 		Word found = wordDao.findWord(nameUpper, language);
 		List<String> definitions = new ArrayList<>();
 		
@@ -94,21 +52,95 @@ public class WordService {
 				definitions.add(i, defBuffer.toString());
 			}
 			found.setDefinitions(definitions);
+						
+			List<Word> words = wordDao.findAllWordsWithLanguage(language);
+			List<String> synonyms = new ArrayList<>();
+			for(int i=0; i<found.getSynonyms().size();i++) {
+				boolean synonymFound = false;
+				for(int j=0; j<words.size();j++) {
+					if(words.get(j).getName().equals(found.getSynonyms().get(i))) {
+						synonymFound = true;
+					}
+				}
+				if(synonymFound) {
+					synonyms.add(found.getSynonyms().get(i));
+				}
+			}
+			
+			found.setSynonyms(synonyms);
+			StringBuffer synBuff = new StringBuffer();
+			for(int i=0; i<synonyms.size();i++) {
+				synBuff.append(synonyms.get(i));
+				synBuff.append("_");
+			}
+			wordDao.updateWord(found.getName(), synBuff.toString(), language);
 			return found;
 		}
 		return null;
 	}
 	
 	/**
-	 * Cherche et retourne les suggestions du mot recherche
-	 * D'abord en remplaçant toutes les lettres une par une, par toute les lettres de l'alphabet
-	 * Puis en regardant dans la liste de mot la bdd si un mot commence ou contient ce mot 
+	 * Methode findWordByNameLanguage : Cherche et retourne le mot recherche selon la langue 
+	 * Methode redefinie : elle contient la liste de tous les noms de la bdd qui sont de la meme
+	 * langue que le mot recherche. Cela permet d'eviter de repeter des appels vers la bdd
 	 * @param name
 	 * @param language
+	 * @param liste des mots
+	 * @return le mot recherche ou null si pas trouve
+	 */
+	public Word findWordByNameLanguage(String name, String language, List<String> names){
+		Word found = wordDao.findWord(name, language);
+		List<String> definitions = new ArrayList<>();
+		
+		if(found != null) {
+			for(int i=0; i<found.getDefinitions().size(); i++) {
+				StringBuffer defBuffer = new StringBuffer();
+				
+				String definitionFound = found.getDefinitions().get(i);
+				definitionFound = definitionFound.replace("\n", "");
+				
+				defBuffer.append(definitionFound);
+				defBuffer.append("_");
+				
+				definitions.add(i, defBuffer.toString());
+			}
+			found.setDefinitions(definitions);
+						
+			List<String> synonyms = new ArrayList<>();
+			for(int i=0; i<found.getSynonyms().size();i++) {
+				boolean synonymFound = false;
+				for(int j=0; j<names.size();j++) {
+					if(names.get(j).equals(found.getSynonyms().get(i))) {
+						synonymFound = true;
+					}
+				}
+				if(synonymFound) {
+					synonyms.add(found.getSynonyms().get(i));
+				}
+			}
+			
+			found.setSynonyms(synonyms);
+			StringBuffer synBuff = new StringBuffer();
+			for(int i=0; i<synonyms.size();i++) {
+				synBuff.append(synonyms.get(i));
+				synBuff.append("_");
+			}
+			wordDao.updateWord(found.getName(), synBuff.toString(), language);
+			return found;
+		}
+		return null;
+	}
+	
+	/**
+	 * Methode findSuggestionByName : cherche et retourne les suggestions du mot recherche
+	 * D'abord en remplaçant toutes les lettres une par une par toutes les lettres de l'alphabet
+	 * Puis en regardant dans la liste de mots la bdd si un mot commence ou contient ce mot 
+	 * @param name le mot tape
+	 * @param language la langue du mot tape
 	 * @return liste des suggestions du mot recherche ou null si pas trouve
 	 */
 	public List<Word> findSuggestionByName(String name, String language){
-		String nameUpper = (WordUtil.getInstance().correctString(name)).toLowerCase();
+		String nameUpper = (WordUtil.correctString(name)).toLowerCase();
 		String partNameNotChangePre = null;
 		String partNameNotChangePost = null; 
 		String partNameChange = null;
@@ -150,28 +182,33 @@ public class WordService {
 	}
 	
 	/**
-	 * Retourne la liste des mots de la bdd
+	 * Methode findAllWord : retourne la liste des mots de la bdd
 	 * @return la liste des mots de la bdd
 	 */
 	public List<Word> findAllWord(){	
 		return wordDao.findAllWords();
 	}
 	
-	public List<Word> findAllWordWithLanguage(){
+	/**
+	 * Methode findAllWordWithLanguage : retourne la liste des mots de la bdd qui sont de la langue indiquee
+	 * @param language la langue recherchee
+	 * @return la liste des mots de la bdd 
+	 */
+	public List<Word> findAllWordWithLanguage(String language){
 		return wordDao.findAllWordsWithLanguage("en");
 	}
 	
 	/**
-	 * Update la liste de synonymes d'un mot
-	 * @param wordName
-	 * @param wordSynonyms
-	 * @param language
-	 * @param method add ou delete
-	 * @return 1 Ajout : Synonyme (Succes), 2 Pas de mot entree, 3 Delete : Synonyme pas trouve dans la liste de ces synonymes,
-	 * 4 Ajout : Mais synonyme fait deja partie de sa liste de synonyme, 5 Ajout : Synonyme n'existe pas dans la bdd
+	 * Methode updateWord : met a jour la liste de synonymes d'un mot
+	 * @param wordName le mot concerne
+	 * @param wordSynonym le synonyme a ajouter ou supprimer
+	 * @param language la langue du mot
+	 * @param method ajouter ou supprimer
+	 * @return le resultat : si 1, succes, si 2, le mot entre n'appartient pas a la bdd, si 3, pour delete, synonyme pas trouve dans la liste de ces synonymes,
+	 * si 4, pour ajout, le synonyme fait deja parti de la liste de synonymes du mot, si 5, pour ajout, le synonyme n'existe pas dans la bdd
 	 */
 	public int updateWord(String wordName, String wordSynonym, String language, String method) {
-		wordSynonym = WordUtil.getInstance().correctString(wordSynonym);
+		wordSynonym = WordUtil.correctString(wordSynonym);
 		Word word = wordDao.findWord(wordName, language);
 		Word wordSyn = wordDao.findWord(wordSynonym, language);
 		
@@ -217,36 +254,32 @@ public class WordService {
 	}
 	
 	/**
-	 * Supprime un mot de la bdd
-	 * Retourne 2 si le mot a supprimer n'existe pas 
-	 * @param name Nom du mot
-	 * @return int Réponse de retour de la méthode
+	 * Methode deleteWordService : supprime un mot de la bdd
+	 * @param name le nom du mot a supprimer
+	 * @return 0 si bien supprime, 1 si pas supprime, 2 si le mot n'existe pas
 	 */
 	public int deleteWordService(String name, String language) {
-		String nameUpper = upperCaseFirst(name);
+		name = WordUtil.correctString(name);
 		
-		if(wordDao.findWord(nameUpper, language) != null) {
-			return wordDao.deleteWord(nameUpper, language);
+		if(wordDao.findWord(name, language) != null) {
+			return wordDao.deleteWord(name, language);
 		}
 		
 		return 2;
 	}
 	
 	/**
-	 * Créer un nouveau mot dans la bdd
-	 * Retourne 0 si le mot a bien ete ajoute
-	 * Retourne 1 si le mot n'a pas ete ajoute
-	 * Retourne 2 si le mot existe deja
-	 * @param name
-	 * @param definitions : si egale a "_", definitions vide
-	 * @param gender
-	 * @param category
-	 * @param synonyms : si egale a "_", aucun synonyme a ajouter
-	 * @param language 
-	 * @return int Reponse de retour de la méthode
+	 * Methode createWordService :creer un nouveau mot dans la bdd
+	 * @param name le nom du mot 
+	 * @param definitions les definitions du mot
+	 * @param gender le genre du mot
+	 * @param category la categorie du mot
+	 * @param synonyms les synonymes du mot
+	 * @param language la langue du mot
+	 * @return 0 si le mot a bien ete ajoute, 1 si le mot n'a pas ete ajoute, 2 si le mot existe deja
 	 */
 	public int createWordService(String name, String definitions, String gender, String category, String synonyms, String language) {
-		String nameUpper = WordUtil.getInstance().correctString(name);
+		String nameUpper = WordUtil.correctString(name);
 		if(wordDao.findWord(nameUpper, language) == null) {
 			if(definitions.equals("_") && !synonyms.equals("_")) {
 				wordDao.createWord(nameUpper, "", gender, category, synonyms, language);
@@ -272,11 +305,11 @@ public class WordService {
 	}
 	
 	/**
-	 * Ajout de liste de mots
-	 * @param words : liste des mots du json
-	 * @return 0 si tout va bien, 1 si erreur sql, 2 si le mot est deja dans la bdd
+	 * Methode createListWordService : ajout d'une liste de mots
+	 * @param words la liste des mots
+	 * @return 0 l'ajout s'est bien passe, 1 si erreur sql, 2 si le mot est deja dans la bdd
 	 */
-	public int createWordService2(List<Word> words) {
+	public int createListWordService(List<Word> words) {
 		List<Word> wordsDB = wordDao.findAllWords();
 		boolean singleWord = false;
 		if(words.size()==1) {
@@ -299,6 +332,12 @@ public class WordService {
 		}
 		
 		for(int i=0; i<words.size();i++) {
+			List<String> definitions = new ArrayList<>();
+			for(int k=0;k<words.get(i).getDefinitions().size();k++) {
+				String def = words.get(i).getDefinitions().get(k).replaceAll("'", "''");
+				definitions.add(def);
+			}
+			words.get(i).setDefinitions(definitions);
 			List<String> synonyms = words.get(i).getSynonyms();
 			for(int j=0; j<synonyms.size();j++) {
 				Boolean found = false;
@@ -333,11 +372,12 @@ public class WordService {
 		return wordDao.createWordBDDFound(words);
 	}
 	
-	/*
-	 * Recupere une liste de 3 mots different et aleatoires possedant chacun au moins un synonyme
+	/**
+	 * Methode getRandomWord : recupere une liste de mots aleatoires 
+	 * @return la liste de mots aleatoires
 	 */
 	public List<Word> getRandomWord() {
-		List<Word> listAllWords = findAllWordWithLanguage();
+		List<Word> listAllWords = findAllWordWithLanguage("en");
 		List<Word> listRandomWords = new ArrayList<>();
 		int a = 0;
 		int b = 0;
@@ -361,7 +401,7 @@ public class WordService {
 					length = 20;
 				}
 				for(int i=0; i<length;i++) {
-					String nameSyn = this.correctString(list[i].getWord());
+					String nameSyn = WordUtil.correctString(list[i].getWord());
 					for(int j=0; j<listAllWords.size();j++) {
 						if(nameSyn.equals(listAllWords.get(j).getName())) {
 							System.out.println("found A" + a);
@@ -391,7 +431,7 @@ public class WordService {
 						length = 20;
 					}
 					for(int i=0; i<length;i++) {
-						String nameSyn = this.correctString(list[i].getWord());
+						String nameSyn = WordUtil.correctString(list[i].getWord());
 						for(int j=0; j<listAllWords.size();j++) {
 							if(nameSyn.equals(listAllWords.get(j).getName())) {
 								System.out.println("found B " + b);
@@ -421,7 +461,7 @@ public class WordService {
 						length = 20;
 					}
 					for(int i=0; i<length;i++) {
-						String nameSyn = this.correctString(list[i].getWord());
+						String nameSyn = WordUtil.correctString(list[i].getWord());
 						for(int j=0; j<listAllWords.size();j++) {
 							if(nameSyn.equals(listAllWords.get(j).getName())) {
 								System.out.println("found C " + c);
@@ -446,53 +486,13 @@ public class WordService {
 		
 		return listRandomWords;
 		
-		/*
-		do {
-			a = (int)(Math.random() * listAllWords.size());
-			//s'il n y a pas de synonym
-			wordA = this.searchSynonyms(listAllWords.get(a), listAllWords);
-			if((wordA.getSynonyms().size()) >= 1){
-				isNotSyn = false ;
-			}
-		}while (isNotSyn);
-			
-		int b;
-		isNotSyn = true;
-		do{
-			b = (int)(Math.random() * listAllWords.size());
-			wordB = this.searchSynonyms(listAllWords.get(b), listAllWords);
-			if((wordB.getSynonyms().size()) >= 1){
-				isNotSyn = false ;
-			}
-		}while(b == a || isNotSyn);
-		
-		int c;
-		isNotSyn = true;
-		do{
-			c = (int)(Math.random() * listAllWords.size());
-			wordC = this.searchSynonyms(listAllWords.get(c), listAllWords);
-			if((wordC.getSynonyms().size()) >= 1){
-				isNotSyn = false ;
-			}
-		}while(c == b || c == a || isNotSyn);
-		//System.out.println("valeur de a "+ a +" sur "+ listAllWords.size());
-		//System.out.println("valeur de b "+ b +" sur "+ listAllWords.size());
-		//System.out.println("valeur de c "+ c +" sur "+ listAllWords.size());
-        listRandomWords.add(wordA);
-        listRandomWords.add(wordB);
-        listRandomWords.add(wordC);
-        
-        System.err.println("la liste contient "+listRandomWords);
-		return listRandomWords;
-		*/
-		
 	}
 
 	/**
-	 * retourne une liste de Word (fausse reponse du quiz) qui est aleatoire ET qui ne match pas avec les mot en question et la reponse synonyme
-	 * @param noWord
-	 * @param noSynonym
-	 * @return
+	 * Methode getRandomAnswer : retourne une liste de mots (fausses reponses du quiz) qui sont aleatoires ET qui ne match pas avec le mot en question et la reponse synonyme
+	 * @param noWord le mot concerne 
+	 * @param noSynonym le synonyme concerne
+	 * @return la liste de fausses reponses
 	 */
 	public List<Word> getRandomAnswer(String noWord, String noSynonym) {
 		// TODO Auto-generated method stub
@@ -537,72 +537,47 @@ public class WordService {
 		return listRandomAnwser;
 	}
 	
-	public Word searchSynonyms(Word word, List<Word> words) {
-		if(word.getSynonyms().size()==0) {
-			System.err.println("SearchSynonyms pour "+word.getName());
-			RestTemplate restTemplate = new RestTemplate();
-			String url = "https://api.datamuse.com/words?ml="+word.getName();
-			WordAPI[] list = restTemplate.getForObject(url, WordAPI[].class);
-
-			int length;
-			if(list.length>20) {
-				length = 20;
-			}
-			else {
-				length = list.length;
-			}
-			String synonym = null;
-						
-			for(int i=0;i<length;i++) {
-//				System.out.println("synonyme possible : "+ this.correctString(list[i].getWord()));
-				
-				int count = 0;
-				boolean continu = true;
-				while(continu) {
-					String nameSyn = correctString(list[i].getWord());
-					System.out.println("Test pour "+nameSyn);
-
-					if(count>=length) {
-						continu = false;
-//						System.err.println("pas d'action 1");
-					}
-
-					else if(words.get(count).getName().equals(nameSyn)){
-						System.err.println("Equals");
-						continu = false;
-						synonym = list[i].getWord();
-						i=length;
-//						System.err.println("pas d'action 2");
-					}
-					else{
-//						System.err.println("pas d'action 3");
-					}
-					count++;
-				}
-			}
-			
-			if(synonym!=null) {
-				word.getSynonyms().add(synonym);
-			}
-		}
-		else {
-			System.out.println("le mot posse deja des synonyme");
+	/**
+	 * Methode updateWordWithList : met a jour les synonymes d'un mot grace a une liste
+	 * @param name le nom du mot concerne
+	 * @param synonyms les synonymes a ajouter
+	 * @param language la langue du mot
+	 */
+	public void updateWordWithList(String name, List<String> synonyms, String language) {
+		StringBuffer sb = new StringBuffer();
+		for(int i=0; i<synonyms.size();i++) {
+			sb.append(synonyms.get(i));
+			sb.append("_");
 		}
 		
-		return word;
+		wordDao.updateWord(name, sb.toString(), language);
+		System.out.println("UpdateList pour "+name);
+		
 	}
 	
-	public String correctString(String word) {
-		String firstLetter = word;
-		word = firstLetter.substring(0, 1).toUpperCase() + firstLetter.substring(1);
-		if(word.contains("'")) {
-			String temp = word.replaceAll("'", "''");
-			word = temp;
-		}
-		if(word.contains("/")) {
-		    String temp = word.replace("\\", " ");
-		    word = temp;
-		}		
-		return word;
+	/**
+	 * Methode findAllNames : permet de recuperer tous les noms des mots de la bdd qui sont de la langue choisie
+	 * @param language la langue
+	 * @return la liste de noms
+	 */
+	public List<String> findAllNames(String language){
+		return wordDao.findAllNames(language);
 	}
+	
+	/**
+	 * Methode containsWord : permet de verifier qu'un mot appartient a la bdd
+	 * @param name le nom du mot
+	 * @param language la langue du mot
+	 * @param words la liste de noms des mots de la bdd
+	 * @return true ou false
+	 */
+	public boolean containsWord(String name, String language, List<String> words) {
+		if(words.contains(name)) {
+			return true;
+		}
+		else 
+			return false;
+	}
+	
+	
 }
